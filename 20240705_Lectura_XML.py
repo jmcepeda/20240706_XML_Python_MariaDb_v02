@@ -9,7 +9,6 @@ import sys
 import mysql.connector
 
 
-
 # Datos de conexión
 try:
     conn = mysql.connector.connect(
@@ -178,7 +177,36 @@ PRIMARY KEY (idCee)
 cur = conn.cursor()
 cur.execute(sentenciaSQL)
 conn.commit()
-conn.close()
+# conn.close()
 
 
 # Crear el archivo XML
+
+# Carga y parsea el archivo XML
+tree = ET.parse('tu_archivo.xml')
+root = tree.getroot()
+
+# Especifica los campos a extraer y sus nombres mapeados en la base de datos
+field_map = {
+    'ZonaClimatica': 'ZonaClimatica',
+}
+
+# Prepara la consulta de inserción con los nombres de las columnas mapeadas
+query = f"INSERT INTO items ({', '.join(field_map.values())}) VALUES (%s, %s, %s)"
+
+# Recorre los elementos del XML y extrae los datos deseados
+for item in root.findall('item'):
+    values = []
+    for xml_field, db_field in field_map.items():
+        value = item.find(xml_field).text
+        values.append(value)
+
+    # Inserta los datos en la base de datos
+    cur.execute(query, tuple(values))
+
+# Confirma los cambios
+conn.commit()
+
+# Cierra la conexión
+cur.close()
+conn.close()
