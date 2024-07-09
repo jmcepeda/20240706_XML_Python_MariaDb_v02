@@ -176,7 +176,7 @@ PRIMARY KEY (idCee)
 """
 cur = conn.cursor()
 cur.execute(SENTENCIASQL)
-conn.commit()
+# conn.commit()
 # conn.close()
 
 
@@ -187,6 +187,31 @@ conn.commit()
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
 tree = ET.parse(RUTARCHIVO)
 root = tree.getroot()
+
+
+def print_element_paths(element, current_path=""):
+    # Construye la ruta del elemento actual
+    path = f"{current_path}/{element.tag}"
+
+    # Imprime la ruta del elemento actual y su texto si existe
+    if element.text and element.text.strip():
+        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
+    else:
+        print(f"Path: {path}, Text: None")
+
+    # Recorre los hijos del elemento actual
+    for child in element:
+        print_element_paths(child, path)
+
+
+# Inicia la función recursiva desde el elemento raíz
+print_element_paths(root)
+
+for child in root:
+    if child.text and child.text.strip():
+        print(f" Tag: {child.tag}, Text: {child.text.strip()}")
+    else:
+        print(f" Tag: {child.tag}, Text: None")
 
 # Especifica los campos a extraer y sus nombres mapeados en la base de datos
 field_map = {
@@ -205,6 +230,8 @@ for item in root.findall('item'):
 
     # Inserta los datos en la base de datos
     cur.execute(query, tuple(values))
+
+    print(values)
 
 # Confirma los cambios
 conn.commit()
