@@ -22,7 +22,7 @@ except mysql.connector.Error as e:
     print(f"Error conectando a la base de datos: {e}")
     sys.exit(1)
 
-sentenciaSQL = """CREATE TABLE IF NOT EXISTS CEE
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE
 (idCee INT NOT NULL AUTO_INCREMENT,
 Tipocee VARCHAR(40) NOT NULL,
 Descripcioncee VARCHAR(40) NOT NULL,
@@ -175,7 +175,7 @@ PRIMARY KEY (idCee)
 );
 """
 cur = conn.cursor()
-cur.execute(sentenciaSQL)
+cur.execute(SENTENCIASQL)
 conn.commit()
 # conn.close()
 
@@ -183,7 +183,9 @@ conn.commit()
 # Crear el archivo XML
 
 # Carga y parsea el archivo XML
-tree = ET.parse('tu_archivo.xml')
+
+RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
+tree = ET.parse(RUTARCHIVO)
 root = tree.getroot()
 
 # Especifica los campos a extraer y sus nombres mapeados en la base de datos
