@@ -14,17 +14,21 @@ try:
     conn = mysql.connector.connect(
         user="jmcepeda",
         password="cintiatyron2015",
-        host="www.multiplicarsantiponce.duckdns.org",
+        # Para mac
+        host="192.168.50.143",
+        # Para Windows/remote
+        # host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
-        database="pruebaxml"
+        database="pruebaxml",
+        collation="utf8mb4_unicode_ci"
     )
 except mysql.connector.Error as e:
     print(f"Error conectando a la base de datos: {e}")
     sys.exit(1)
 
-SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE3
 (idCee INT NOT NULL AUTO_INCREMENT,
-Tipocee VARCHAR(40) NOT NULL,
+DatosEnergeticosDelEdificioVersion VARCHAR(40) NOT NULL, 
 Descripcioncee VARCHAR(40) NOT NULL,
 DatosEnergeticosDelEdificio VARCHAR(40) NOT NULL,
 Dateregistro DATETIME NOT NULL,
@@ -176,7 +180,7 @@ PRIMARY KEY (idCee)
 """
 cur = conn.cursor()
 cur.execute(SENTENCIASQL)
-# conn.commit()
+conn.commit()
 # conn.close()
 
 
@@ -195,7 +199,8 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {
+              element.text.strip()}")
     else:
         print(f"Path: {path}, Text: None")
 
@@ -236,11 +241,12 @@ print({', '.join(['%s'] * len(field_map))})
 
 print("Imprimir Consulta Completa para Insertar")
 print(
-    f"INSERT INTO CEE2 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})")
+    f"INSERT INTO CEE3 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})")
 
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE2 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})"
+query = f"INSERT INTO CEE3 ({', '.join(field_map.values())}) VALUES ({
+    ', '.join(['%s'] * len(field_map))})"
 
 # Recorre los elementos del XML y extrae los datos deseados
 
