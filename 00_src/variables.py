@@ -16,7 +16,7 @@ field_map = {
     './/IdentificacionEdificio/AlcanceInformacionXML': 'AlcanceInformacionXML',
     './/IdentificacionEdificio/Municipio': 'Municipio',
     './/IdentificacionEdificio/AnoConstruccion': 'YearConstruccion',
-    # Seguir Por aquí  con estos cambios
+    # Seguir Por aquí  con estos cambios Def Commint y Push
     './/Calificacion/EmisionesCO2/Global': 'PorcentajeSuperficieHabitableCalefactada',
     './/Calificacion/EmisionesCO2/Global': 'DensidadFuentesInternas',
     './/Calificacion/EmisionesCO2/Global': 'Compacidad',
