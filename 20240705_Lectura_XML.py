@@ -213,10 +213,31 @@ for child in root:
     else:
         print(f" Tag: {child.tag}, Text: None")
 
+
+# Vamos a tratar de identificar un valor en concreto
+
+CalifiacionEmisiones = root.find(
+    "./DatosEnergeticosDelEdificio/Calificacion/EmisionesCO2/Global")
+print(CalifiacionEmisiones)
+
+CalifiacionEmisiones = root.find(
+    "./DatosEnergeticosDelEdificio/Calificacion/EmisionesCO2")
+print(CalifiacionEmisiones)
+
+CalifiacionEmisiones = root.find(
+    "./DatosEnergeticosDelEdificio/Calificacion")
+print(CalifiacionEmisiones)
+
+CalifiacionEmisiones = root.find(
+    "./DatosEnergeticosDelEdificio")
+print(CalifiacionEmisiones)
+
+
 # Especifica los campos a extraer y sus nombres mapeados en la base de datos
 field_map = {
     'ZonaClimatica': 'ZonaClimatica',
 }
+
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
 query = f"INSERT INTO items ({', '.join(field_map.values())}) VALUES (%s, %s, %s)"
@@ -232,6 +253,7 @@ for item in root.findall('item'):
     cur.execute(query, tuple(values))
 
     print(values)
+
 
 # Confirma los cambios
 conn.commit()
