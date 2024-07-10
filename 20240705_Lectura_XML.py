@@ -217,42 +217,48 @@ for child in root:
 # Vamos a tratar de identificar un valor en concreto
 
 CalifiacionEmisiones = root.find(
-    "./DatosEnergeticosDelEdificio/Calificacion/EmisionesCO2/Global")
-print(CalifiacionEmisiones)
-
-CalifiacionEmisiones = root.find(
-    "./DatosEnergeticosDelEdificio/Calificacion/EmisionesCO2")
-print(CalifiacionEmisiones)
-
-CalifiacionEmisiones = root.find(
-    "./DatosEnergeticosDelEdificio/Calificacion")
-print(CalifiacionEmisiones)
-
-CalifiacionEmisiones = root.find(
-    "./DatosEnergeticosDelEdificio")
-print(CalifiacionEmisiones)
+    './/Calificacion/EmisionesCO2/Global')
+print(CalifiacionEmisiones.text)
 
 
 # Especifica los campos a extraer y sus nombres mapeados en la base de datos
 field_map = {
-    'ZonaClimatica': 'ZonaClimatica',
+    # 'ZonaClimatica': 'ZonaClimatica',
+    './/Calificacion/EmisionesCO2/Global': 'CalificacionEmisionesC02Global'
 }
+
+print("Primera Parte de Consulta para Insertar")
+print({', '.join(field_map.values())})
+
+print("Segunda Parte de Consulta para Insertar")
+print({', '.join(['%s'] * len(field_map))})
+
+
+print("Imprimir Consulta Completa para Insertar")
+print(
+    f"INSERT INTO CEE2 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})")
 
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO items ({', '.join(field_map.values())}) VALUES (%s, %s, %s)"
+query = f"INSERT INTO CEE2 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})"
 
 # Recorre los elementos del XML y extrae los datos deseados
-for item in root.findall('item'):
-    values = []
-    for xml_field, db_field in field_map.items():
-        value = item.find(xml_field).text
-        values.append(value)
 
-    # Inserta los datos en la base de datos
-    cur.execute(query, tuple(values))
+values = []
+for xml_field, db_field in field_map.items():
+    value = root.find(xml_field).text
+    values.append(value)
+    print(xml_field, ' - ', root.find(xml_field).text)
 
-    print(values)
+print("Imprimiendo Valores de los campos")
+print(tuple(values))
+
+# Inserta los datos en la base de datos
+cur.execute(query, tuple(values))
+
+# cur.execute(SENTENCIASQL)
+
+print(values)
 
 
 # Confirma los cambios
