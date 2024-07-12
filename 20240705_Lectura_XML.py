@@ -1,4 +1,7 @@
 import xml.etree.ElementTree as ET
+from datetime import datetime
+
+from src.variables_v02 import field_map
 # from pymongo import MongoClient
 
 # from pymongo import MongoClient
@@ -15,9 +18,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        host="192.168.50.143",
+        # host="192.168.50.143",
         # Para Windows/remote
-        # host="www.multiplicarsantiponce.duckdns.org",
+        host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -26,12 +29,7 @@ except mysql.connector.Error as e:
     print(f"Error conectando a la base de datos: {e}")
     sys.exit(1)
 
-DatosEnergeticosDelEdificioVersion VARCHAR(40) NOT NULL,
-Descripcioncee VARCHAR(40) NOT NULL,
-DatosEnergeticosDelEdificio VARCHAR(40) NOT NULL,
-DateCee DATETIME NOT NULL,
-
-SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE3
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE7
 (idCee INT NOT NULL AUTO_INCREMENT,
 DateCee DATETIME NOT NULL, 
 ReferenciaCatastral VARCHAR(40),
@@ -87,7 +85,6 @@ FactoresdePasoFinalAEmisionesElectricidadPeninsular DEC(7,4) NOT NULL,
 FactoresdePasoFinalAEmisionesGLP DEC(7,4) NOT NULL,
 FactoresdePasoFinalAEmisionesCarbon DEC(7,4) NOT NULL,
 FactoresdePasoFinalAEmisionesBiocarburante DEC(7,4) NOT NULL,
-FactoresdePasoFinalAEmisionesElectricidadCanarias DEC(7,4) NOT NULL,
 FactoresdePasoFinalAEmisionesBiomasaPellet DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresGasNaturalCalefaccion DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresGasNaturalGlobal DEC(7,4) NOT NULL,
@@ -119,11 +116,11 @@ ConsumoEnergiaFinalVectoresCarbonGlobal DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresCarbonACS DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresCarbonRefrigeracion DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresCarbonIluminacion DEC(7,4) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburantesCalefaccion DEC(7,4) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburantesGlobal DEC(7,4) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburantesACS DEC(7,4) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburantesRefrigeracion DEC(7,4) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburantesIluminacion DEC(7,4) NOT NULL,
+ConsumoEnergiaFinalVectoresBiocarburanteCalefaccion DEC(7,4) NOT NULL,
+ConsumoEnergiaFinalVectoresBiocarburanteGlobal DEC(7,4) NOT NULL,
+ConsumoEnergiaFinalVectoresBiocarburanteACS DEC(7,4) NOT NULL,
+ConsumoEnergiaFinalVectoresBiocarburanteRefrigeracion DEC(7,4) NOT NULL,
+ConsumoEnergiaFinalVectoresBiocarburanteIluminacion DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresBiomasaPelletsCalefaccion DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresBiomasaPelletsGlobal DEC(7,4) NOT NULL,
 ConsumoEnergiaFinalVectoresBiomasaPelletsACS DEC(7,4) NOT NULL,
@@ -176,8 +173,8 @@ CalificacionEmisionesC02EscalaGlobalC DEC(7,4) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalD DEC(7,4) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalE DEC(7,4) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalF DEC(7,4) NOT NULL,
-PRIMARY KEY (idCee)
-);
+PRIMARY KEY (idCee) 
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
 cur = conn.cursor()
 cur.execute(SENTENCIASQL)
@@ -200,8 +197,7 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {
-              element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
     else:
         print(f"Path: {path}, Text: None")
 
@@ -228,10 +224,10 @@ print(CalifiacionEmisiones.text)
 
 
 # Especifica los campos a extraer y sus nombres mapeados en la base de datos
-field_map = {
-    # 'ZonaClimatica': 'ZonaClimatica',
-    './/Calificacion/EmisionesCO2/Global': 'CalificacionEmisionesC02Global'
-}
+# field_map = {
+#     # 'ZonaClimatica': 'ZonaClimatica',
+#     './/Calificacion/EmisionesCO2/Global': 'CalificacionEmisionesC02Global'
+# }
 
 print("Primera Parte de Consulta para Insertar")
 print({', '.join(field_map.values())})
@@ -242,18 +238,50 @@ print({', '.join(['%s'] * len(field_map))})
 
 print("Imprimir Consulta Completa para Insertar")
 print(
-    f"INSERT INTO CEE3 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})")
+    f"INSERT INTO CEE7 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})")
+
+# Función para detectar y convertir tipos de datos
+
+
+def convert_type(value):
+    # Detectar y convertir enteros
+    if value.isdigit():
+        return int(value)
+
+    # Detectar y convertir flotantes
+    try:
+        float_value = float(value)
+        return float_value
+    except ValueError:
+        pass
+
+    # Detectar y convertir fechas
+    # Puedes agregar otros formatos de fecha según sea necesario
+    date_formats = ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"]
+    for fmt in date_formats:
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            pass
 
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE3 ({', '.join(field_map.values())}) VALUES ({
-    ', '.join(['%s'] * len(field_map))})"
+query = f"INSERT INTO CEE7 ({', '.join(field_map.values())}) VALUES({', '.join(['%s'] * len(field_map))})"
 
 # Recorre los elementos del XML y extrae los datos deseados
 
 values = []
 for xml_field, db_field in field_map.items():
-    value = root.find(xml_field).text
+    # value = root.find(xml_field).text
+    print('Campo Analizador para Convertir: ', xml_field)
+    # value = convert_type(root.find(xml_field))
+    if root.find(xml_field) is not None:
+        value = convert_type(root.find(xml_field).text)
+    else:
+        value = root.find(xml_field).text
+    # if xml_field =="DateCee"
+    #     value = root.find(xml_field).text
+
     values.append(value)
     print(xml_field, ' - ', root.find(xml_field).text)
 
