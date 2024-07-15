@@ -18,9 +18,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        # host="192.168.50.143",
+        host="192.168.50.143",
         # Para Windows/remote
-        host="www.multiplicarsantiponce.duckdns.org",
+        # host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -29,8 +29,9 @@ except mysql.connector.Error as e:
     print(f"Error conectando a la base de datos: {e}")
     sys.exit(1)
 
-SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE7
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE
 (idCee INT NOT NULL AUTO_INCREMENT,
+DateRegistro DATETIME NOT NULL, 
 DateCee DATETIME NOT NULL, 
 ReferenciaCatastral VARCHAR(40),
 Provincia VARCHAR(40) NOT NULL,
@@ -187,7 +188,10 @@ conn.commit()
 # Carga y parsea el archivo XML
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
-RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3 Pequeno terciario.xml"
+RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
+# RUTARCHIVO = "./02_HULC/ejemplogt-Certificado-V21.xml"
+RUTARCHIVO = "./01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
+
 
 tree = ET.parse(RUTARCHIVO)
 root = tree.getroot()
@@ -199,7 +203,8 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {
+              element.text.strip()}")
     else:
         print(f"Path: {path}, Text: None")
 
@@ -217,8 +222,7 @@ for child in root:
     else:
         print(f" Tag: {child.tag}, Text: None")
 
-
-# Vamos a tratar de identificar un valor en concreto
+        # Vamos a tratar de identificar un valor en concreto
 
 CalifiacionEmisiones = root.find(
     './/Calificacion/EmisionesCO2/Global')
@@ -231,16 +235,12 @@ print(CalifiacionEmisiones.text)
 #     './/Calificacion/EmisionesCO2/Global': 'CalificacionEmisionesC02Global'
 # }
 
-print("Primera Parte de Consulta para Insertar")
-print({', '.join(field_map.values())})
+# print("Primera Parte de Consulta para Insertar")
+# print({', '.join(field_map.values())})
 
-print("Segunda Parte de Consulta para Insertar")
-print({', '.join(['%s'] * len(field_map))})
+# print("Segunda Parte de Consulta para Insertar")
+# print({', '.join(['%s'] * len(field_map))})
 
-
-print("Imprimir Consulta Completa para Insertar")
-print(
-    f"INSERT INTO CEE7 ({', '.join(field_map.values())}) VALUES ({', '.join(['%s'] * len(field_map))})")
 
 # Función para detectar y convertir tipos de datos
 
@@ -269,16 +269,31 @@ def convert_type(value):
     # Si no es ninguno de los anteriores, retornar como string (cadena de caracteres)
     return value
 
+# Insertar Campos Adicionales en Tupla field_map
+
+
+my_field_map = {
+    'Sin_Datos_en_XML': 'DateRegistro',
+}
+
+
+# Crear un nuevo diccionario con el nuevo elemento al principio
+
+my_field_map.update(field_map)
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE7 ({', '.join(field_map.values())}) VALUES({', '.join(['%s'] * len(field_map))})"
+query = f"INSERT INTO CEE ({', '.join(my_field_map.values())}) VALUES({
+    ', '.join(['%s'] * len(my_field_map))})"
+
+print("Imprimir Consulta Completa para Insertar")
+print(query)
 
 # Recorre los elementos del XML y extrae los datos deseados
 
 values = []
 for xml_field, db_field in field_map.items():
     # value = root.find(xml_field).text
-    print('Campo Analizador para Convertir: ', xml_field)
+    # print('Campo Analizador para Convertir: ', xml_field)
     # value = convert_type(root.find(xml_field))
     if root.find(xml_field) is not None:
         value = convert_type(root.find(xml_field).text)
@@ -290,7 +305,24 @@ for xml_field, db_field in field_map.items():
     values.append(value)
     print(xml_field, ' - ', root.find(xml_field).text)
 
-print("Imprimiendo Valores de los campos")
+# print("Imprimiendo Valores de los campos")
+# print(tuple(values))
+
+# Convertir la tupla en una lista
+
+# Nuevo elemento que deseas insertar
+
+# Obtener la fecha y hora actual
+fecha_actual = datetime.now()
+
+print(fecha_actual)
+
+# fecha_actual = fecha_actual.strptime(fecha_actual, "%Y-%m-%d")
+
+# Puedes usar lista.insert(posicion, nuevo_elemento) para una posición específica
+values.insert(0, fecha_actual)
+
+print("Imprimiendo Valores de los campos Tras Añadir Fecha de Registro")
 print(tuple(values))
 
 # Inserta los datos en la base de datos
@@ -303,6 +335,55 @@ print(values)
 
 # Confirma los cambios
 conn.commit()
+
+
+# Ahora toca hacer una consulta de datos
+
+# Crear un cursor
+cursor = conn.cursor(dictionary=True)
+
+# Consulta para obtener los registros de la tabla de viviendas
+consulta_CEE = """
+SELECT 
+    NombreDelEdificio,
+    Provincia,
+    Municipio,
+    ZonaClimatica,
+    SuperficieHabitable,
+    ReferenciaCatastral,
+    Procedimiento,
+    YearConstruccion,
+    EmisionesCO2Global,
+    EmisionesCO2Calefaccion,
+    EmisionesCO2ACS,
+    EmisionesCO2Refrigeracion,
+    EmisionesCO2Iluminacion,
+    CalificacionDemandaCalefaccion,
+    CalificacionDemandaRefrigeracion,
+    CalificacionEmisionesC02Calefaccion,
+    CalificacionEmisionesC02Refrigeracion,
+    CalificacionEmisionesC02Iluminacion,
+    CalificacionEmisionesC02Global,
+    ConsumoEnergiaPrimariaNoRenovableCalefaccion,
+    ConsumoEnergiaPrimariaNoRenovableGlobal,
+    ConsumoEnergiaPrimariaNoRenovableACS,
+    ConsumoEnergiaPrimariaNoRenovableRefrigeracion,
+    ConsumoEnergiaPrimariaNoRenovableIluminacion,
+    CalificacionEnergiaPrimariaNoRenovableCalefaccion,
+    CalificacionEnergiaPrimariaNoRenovableRefrigeracion,
+    CalificacionEnergiaPrimariaNoRenovableIluminacion,
+    CalificacionEnergiaPrimariaNoRenovableGlobal
+FROM 
+    CEE
+"""
+
+# Ejecutar la consulta
+cursor.execute(consulta_CEE)
+
+# Obtener todos los resultados y almacenarlos en una lista de diccionarios
+resultados_CEE = cursor.fetchall()
+
+print(resultados_CEE)
 
 # Cierra la conexión
 cur.close()
