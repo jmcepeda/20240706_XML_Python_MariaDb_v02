@@ -31,8 +31,8 @@ except mysql.connector.Error as e:
 
 SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CEE
 (idCee INT NOT NULL AUTO_INCREMENT,
-DateRegistro DATETIME NOT NULL, 
-DateCee DATETIME NOT NULL, 
+DateRegistro DATETIME NOT NULL,
+DateCee DATETIME NOT NULL,
 ReferenciaCatastral VARCHAR(40),
 Provincia VARCHAR(40) NOT NULL,
 ComunidadAutonoma VARCHAR(40) NOT NULL,
@@ -42,10 +42,10 @@ NormativaVigente VARCHAR(40) NOT NULL,
 Direccion VARCHAR(40) NOT NULL,
 NombreDelEdificio VARCHAR(250) NOT NULL,
 SuperficieHabitable DEC(10,6) NOT NULL,
-Procedimiento VARCHAR(40) NOT NULL,
+Procedimiento VARCHAR(80) NOT NULL,
 AlcanceInformacionXML VARCHAR(40) NOT NULL,
 Municipio VARCHAR(40) NOT NULL,
-YearConstruccion INT NOT NULL,
+YearConstruccion VARCHAR(40) NOT NULL,
 PorcentajeSuperficieHabitableCalefactada DEC(18,8) NOT NULL,
 DensidadFuentesInternas DEC(18,8) NOT NULL,
 Compacidad DEC(18,8) NOT NULL,
@@ -55,29 +55,29 @@ DemandaDiariaACS DEC(18,8) NOT NULL,
 NumeroDePlantasSobreRasante DEC(18,8) NOT NULL,
 NumeroDePlantasBajoRasante DEC(18,8) NOT NULL,
 PorcentajeSuperficieHabitableRefrigerada DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaE DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaNO DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaNE DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaO DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaN DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaS DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaSO DEC(18,8) NOT NULL,
-PorcentajeSuperficieAcristaladaSE DEC(18,8) NOT NULL,
+PorcentajeSuperficieAcristaladaE DEC(18,8),
+PorcentajeSuperficieAcristaladaNO DEC(18,8),
+PorcentajeSuperficieAcristaladaNE DEC(18,8),
+PorcentajeSuperficieAcristaladaO DEC(18,8),
+PorcentajeSuperficieAcristaladaN DEC(18,8),
+PorcentajeSuperficieAcristaladaS DEC(18,8),
+PorcentajeSuperficieAcristaladaSO DEC(18,8),
+PorcentajeSuperficieAcristaladaSE DEC(18,8),
 DemandaEdificioObjetoGlobal DEC(18,8) NOT NULL,
 DemandaEdificioObjetoACS DEC(18,8) NOT NULL,
 DemandaEdificioObjetoRefrigeracion DEC(18,8) NOT NULL,
 DemandaEdificioObjetoCalefaccion DEC(18,8) NOT NULL,
-DemandaEdificioDeReferenciaACS DEC(18,8) NOT NULL,
-DemandaEdificioDeReferenciaRefrigeracion DEC(18,8) NOT NULL,
-DemandaEdificioDeReferenciaCalefaccion DEC(18,8) NOT NULL,
-DemandaEdificioDeReferenciaGlobal DEC(18,8) NOT NULL,
+DemandaEdificioDeReferenciaACS DEC(18,8),
+DemandaEdificioDeReferenciaRefrigeracion DEC(18,8),
+DemandaEdificioDeReferenciaCalefaccion DEC(18,8),
+DemandaEdificioDeReferenciaGlobal DEC(18,8),
 FactoresdePasoFinalAPrimariaNoRenovableGasNatural DEC(18,8) NOT NULL,
 FactoresdePasoFinalAPrimariaNoRenovableBiomasaOtros DEC(18,8) NOT NULL,
 FactoresdePasoFinalAPrimariaNoRenovableGasoleoC DEC(18,8) NOT NULL,
 FactoresdePasoFinalAPrimariaNoRenovableElectricidadPeninsular DEC(18,8) NOT NULL,
 FactoresdePasoFinalAPrimariaNoRenovableGLP DEC(18,8) NOT NULL,
 FactoresdePasoFinalAPrimariaNoRenovableCarbon DEC(18,8) NOT NULL,
-FactoresdePasoFinalAPrimariaNoRenovableBiocarburante DEC(18,8) NOT NULL,
+FactoresdePasoFinalAPrimariaNoRenovableBiocarburante DEC(18,8),
 FactoresdePasoFinalAPrimariaNoRenovableBiomasaPellet DEC(18,8) NOT NULL,
 FactoresdePasoFinalAEmisionesGasNatural DEC(18,8) NOT NULL,
 FactoresdePasoFinalAEmisionesBiomasaOtros DEC(18,8) NOT NULL,
@@ -85,48 +85,48 @@ FactoresdePasoFinalAEmisionesGasoleoC DEC(18,8) NOT NULL,
 FactoresdePasoFinalAEmisionesElectricidadPeninsular DEC(18,8) NOT NULL,
 FactoresdePasoFinalAEmisionesGLP DEC(18,8) NOT NULL,
 FactoresdePasoFinalAEmisionesCarbon DEC(18,8) NOT NULL,
-FactoresdePasoFinalAEmisionesBiocarburante DEC(18,8) NOT NULL,
-FactoresdePasoFinalAEmisionesBiomasaPellet DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasNaturalCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasNaturalGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasNaturalACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasNaturalRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasNaturalIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresElectricidadPeninsularCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresElectricidadPeninsularGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresElectricidadPeninsularACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresElectricidadPeninsularRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresElectricidadPeninsularIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaOtrosCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaOtrosGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaOtrosACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaOtrosRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaOtrosIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasoleoCCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasoleoCGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasoleoCACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasoleoCRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGasoleoCIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGLPCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGLPGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGLPACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGLPRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresGLPIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresCarbonCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresCarbonGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresCarbonACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresCarbonRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresCarbonIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburanteCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburanteGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburanteACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburanteRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiocarburanteIluminacion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaPelletsCalefaccion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaPelletsGlobal DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaPelletsACS DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaPelletsRefrigeracion DEC(18,8) NOT NULL,
-ConsumoEnergiaFinalVectoresBiomasaPelletsIluminacion DEC(18,8) NOT NULL,
+FactoresdePasoFinalAEmisionesBiocarburante DEC(18,8),
+FactoresdePasoFinalAEmisionesBiomasaPellet DEC(18,8),
+ConsumoEnergiaFinalVectoresGasNaturalCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresGasNaturalGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresGasNaturalACS DEC(18,8),
+ConsumoEnergiaFinalVectoresGasNaturalRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresGasNaturalIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresElectricidadPeninsularCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresElectricidadPeninsularGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresElectricidadPeninsularACS DEC(18,8),
+ConsumoEnergiaFinalVectoresElectricidadPeninsularRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresElectricidadPeninsularIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaOtrosCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaOtrosGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaOtrosACS DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaOtrosRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaOtrosIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresGasoleoCCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresGasoleoCGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresGasoleoCACS DEC(18,8),
+ConsumoEnergiaFinalVectoresGasoleoCRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresGasoleoCIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresGLPCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresGLPGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresGLPACS DEC(18,8),
+ConsumoEnergiaFinalVectoresGLPRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresGLPIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresCarbonCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresCarbonGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresCarbonACS DEC(18,8),
+ConsumoEnergiaFinalVectoresCarbonRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresCarbonIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiocarburanteCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiocarburanteGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresBiocarburanteACS DEC(18,8),
+ConsumoEnergiaFinalVectoresBiocarburanteRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiocarburanteIluminacion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaPelletsCalefaccion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaPelletsGlobal DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaPelletsACS DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaPelletsRefrigeracion DEC(18,8),
+ConsumoEnergiaFinalVectoresBiomasaPelletsIluminacion DEC(18,8),
 ConsumoEnergiaPrimariaNoRenovableCalefaccion DEC(18,8) NOT NULL,
 ConsumoEnergiaPrimariaNoRenovableGlobal DEC(18,8) NOT NULL,
 ConsumoEnergiaPrimariaNoRenovableACS DEC(18,8) NOT NULL,
@@ -140,8 +140,8 @@ EmisionesCO2Calefaccion DEC(18,8) NOT NULL,
 EmisionesCO2ACS DEC(18,8) NOT NULL,
 EmisionesCO2Refrigeracion DEC(18,8) NOT NULL,
 EmisionesCO2Iluminacion DEC(18,8) NOT NULL,
-CalificacionDemandaCalefaccion VARCHAR(40) NOT NULL,
-CalificacionDemandaRefrigeracion VARCHAR(40) NOT NULL,
+CalificacionDemandaCalefaccion VARCHAR(40),
+CalificacionDemandaRefrigeracion VARCHAR(40),
 CalificacionDemandaEscalaCalefaccionA DEC(18,8) NOT NULL,
 CalificacionDemandaEscalaCalefaccionB DEC(18,8) NOT NULL,
 CalificacionDemandaEscalaCalefaccionC DEC(18,8) NOT NULL,
@@ -154,27 +154,27 @@ CalificacionDemandaEscalaRefrigeracionC DEC(18,8) NOT NULL,
 CalificacionDemandaEscalaRefrigeracionD DEC(18,8) NOT NULL,
 CalificacionDemandaEscalaRefrigeracionE DEC(18,8) NOT NULL,
 CalificacionDemandaEscalaRefrigeracionF DEC(18,8) NOT NULL,
-CalificacionEnergiaPrimariaNoRenovableCalefaccion VARCHAR(40) NOT NULL,
-CalificacionEnergiaPrimariaNoRenovableRefrigeracion VARCHAR(40) NOT NULL,
-CalificacionEnergiaPrimariaNoRenovableIluminacion VARCHAR(40) NOT NULL,
-CalificacionEnergiaPrimariaNoRenovableGlobal VARCHAR(40) NOT NULL,
+CalificacionEnergiaPrimariaNoRenovableCalefaccion VARCHAR(40),
+CalificacionEnergiaPrimariaNoRenovableRefrigeracion VARCHAR(40),
+CalificacionEnergiaPrimariaNoRenovableIluminacion VARCHAR(40),
+CalificacionEnergiaPrimariaNoRenovableGlobal VARCHAR(40),
 CalificacionEnergiaPrimariaNoRenovableEscalaGlobalA DEC(18,8) NOT NULL,
 CalificacionEnergiaPrimariaNoRenovableEscalaGlobalB DEC(18,8) NOT NULL,
 CalificacionEnergiaPrimariaNoRenovableEscalaGlobalC DEC(18,8) NOT NULL,
 CalificacionEnergiaPrimariaNoRenovableEscalaGlobalD DEC(18,8) NOT NULL,
 CalificacionEnergiaPrimariaNoRenovableEscalaGlobalE DEC(18,8) NOT NULL,
 CalificacionEnergiaPrimariaNoRenovableEscalaGlobalF DEC(18,8) NOT NULL,
-CalificacionEmisionesC02Calefaccion VARCHAR(40) NOT NULL,
-CalificacionEmisionesC02Refrigeracion VARCHAR(40) NOT NULL,
-CalificacionEmisionesC02Iluminacion VARCHAR(40) NOT NULL,
-CalificacionEmisionesC02Global VARCHAR(40) NOT NULL,
+CalificacionEmisionesC02Calefaccion VARCHAR(40),
+CalificacionEmisionesC02Refrigeracion VARCHAR(40),
+CalificacionEmisionesC02Iluminacion VARCHAR(40),
+CalificacionEmisionesC02Global VARCHAR(40),
 CalificacionEmisionesC02EscalaGlobalA DEC(18,8) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalB DEC(18,8) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalC DEC(18,8) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalD DEC(18,8) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalE DEC(18,8) NOT NULL,
 CalificacionEmisionesC02EscalaGlobalF DEC(18,8) NOT NULL,
-PRIMARY KEY (idCee) 
+PRIMARY KEY (idCee)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
 cur = conn.cursor()
@@ -188,9 +188,9 @@ conn.commit()
 # Carga y parsea el archivo XML
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
-RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
-# RUTARCHIVO = "./02_HULC/ejemplogt-Certificado-V21.xml"
-RUTARCHIVO = "./01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
+# RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
+# RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
+# RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
 
 
 tree = ET.parse(RUTARCHIVO)
@@ -298,12 +298,13 @@ for xml_field, db_field in field_map.items():
     if root.find(xml_field) is not None:
         value = convert_type(root.find(xml_field).text)
     else:
-        value = root.find(xml_field).text
+        # value = root.find(xml_field).text
+        value = None
     # if xml_field =="DateCee"
     #     value = root.find(xml_field).text
 
     values.append(value)
-    print(xml_field, ' - ', root.find(xml_field).text)
+    print(xml_field, ' - ', value)
 
 # print("Imprimiendo Valores de los campos")
 # print(tuple(values))
@@ -344,7 +345,7 @@ cursor = conn.cursor(dictionary=True)
 
 # Consulta para obtener los registros de la tabla de viviendas
 consulta_CEE = """
-SELECT 
+SELECT
     NombreDelEdificio,
     Provincia,
     Municipio,
@@ -373,7 +374,7 @@ SELECT
     CalificacionEnergiaPrimariaNoRenovableRefrigeracion,
     CalificacionEnergiaPrimariaNoRenovableIluminacion,
     CalificacionEnergiaPrimariaNoRenovableGlobal
-FROM 
+FROM
     CEE
 """
 
