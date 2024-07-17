@@ -142,3 +142,32 @@ field_map = {
     './/Calificacion/EmisionesCO2/EscalaGlobal/E': 'CalificacionEmisionesC02EscalaGlobalE',
     './/Calificacion/EmisionesCO2/EscalaGlobal/F': 'CalificacionEmisionesC02EscalaGlobalF',
 }
+
+
+field_map_cerramiento = {
+    './/DatosEnvolventeTermica/CerramientosOpacos/Elemento/Tipo': 'CerramientosOpacosTipo',
+    './/DatosEnvolventeTermica/CerramientosOpacos/Elemento/Transmitancia': 'CerramientosOpacosTransmitancia',
+    './/DatosEnvolventeTermica/CerramientosOpacos/Elemento/Orientacion': 'CerramientosOpacosOrientacion',
+    './/DatosEnvolventeTermica/CerramientosOpacos/Elemento/Superficie': 'CerramientosOpacosSuperficie',
+    './/DatosEnvolventeTermica/CerramientosOpacos/Elemento/Nombre': 'CerramientosOpacosNombre',
+    './/DatosEnvolventeTermica/CerramientosOpacos/Elemento/ModoDeObtencion': 'CerramientosOpacosModoDeObtencion'
+}
+
+field_map_hueco = {
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Tipo': 'HuecosyLucernariosTipo',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Superficie': 'HuecosyLucernariosTipo',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Transmitancia': 'HuecosyLucernariosTipo',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionTransmitancia': 'HuecosyLucernarios',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Orientacion': 'HuecosyLucernarios',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionFactorSolar': 'HuecosyLucernarios',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/FactorSolar': 'HuecosyLucernarios',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionTransmitancia': 'HuecosyLucernarios'
+}
+
+field_map_climatizacion_acs = {
+
+}
+
+field_map_renovables = {
+
+}

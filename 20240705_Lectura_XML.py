@@ -8,7 +8,6 @@ from src.variables_v02 import field_map
 
 import sys
 # import mariadb
-
 import mysql.connector
 
 
@@ -18,9 +17,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        # host="192.168.50.143",
+        host="192.168.50.143",
         # Para Windows/remote
-        host="www.multiplicarsantiponce.duckdns.org",
+        # host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -425,6 +424,8 @@ for registro in resultados_CEE_Agrupada:
 
 print(f"SuperficieHabitable Total: {Suma_SuperficieHabitable} m2")
 # Hacer Operaciones con datos de la Base de Datos
+print(
+    f"Tres Veces la Suma de la SuperficieHabitable Total: {float(Suma_SuperficieHabitable)*3} m2")
 
 
 # Cierra la conexión
