@@ -18,9 +18,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        host="192.168.50.143",
+        # host="192.168.50.143",
         # Para Windows/remote
-        # host="www.multiplicarsantiponce.duckdns.org",
+        host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -203,8 +203,7 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {
-              element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
     else:
         print(f"Path: {path}, Text: None")
 
@@ -276,14 +275,12 @@ my_field_map = {
     'Sin_Datos_en_XML': 'DateRegistro',
 }
 
-
 # Crear un nuevo diccionario con el nuevo elemento al principio
 
 my_field_map.update(field_map)
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE ({', '.join(my_field_map.values())}) VALUES({
-    ', '.join(['%s'] * len(my_field_map))})"
+query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({', '.join(['%s'] * len(my_field_map))})"
 
 print("Imprimir Consulta Completa para Insertar")
 print(query)
