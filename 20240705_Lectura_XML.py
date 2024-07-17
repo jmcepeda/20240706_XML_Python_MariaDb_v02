@@ -188,7 +188,7 @@ conn.commit()
 # Carga y parsea el archivo XML
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
-# RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
+RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
 # RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
 # RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
 
@@ -381,7 +381,51 @@ cursor.execute(consulta_CEE)
 # Obtener todos los resultados y almacenarlos en una lista de diccionarios
 resultados_CEE = cursor.fetchall()
 
+# Imprimir Resultado de la consulta
 print(resultados_CEE)
+
+# Obtener Datos Agregados de tabla CEE
+
+consulta_CEE_Agrupada = """
+SELECT 
+    Provincia,
+    COUNT(*) AS Numero_CEE,
+    SUM(SuperficieHabitable) AS SuperficieHabitable,
+    SUM(EmisionesCO2Global) AS EmisionesCO2Global_Total,
+    SUM(EmisionesCO2Global) AS EmisionesCO2Calefaccion_Total,
+    SUM(EmisionesCO2Global) AS EmisionesCO2Refrigeración_Total,
+    SUM(EmisionesCO2Global) AS EmisionesCO2ACS_Total,
+    SUM(EmisionesCO2Global) AS EmisionesCO2Iluminacion_Total,
+    SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableGlobal_Total,
+    SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableCalefaccion_Total,
+    SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableRefrigeración_Total,
+    SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableACSn_Total,
+    SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableIluminacion_Total,
+    COUNT(DISTINCT Municipio) AS Numero_Municipios
+FROM 
+    CEE
+GROUP BY 
+    Provincia;
+"""
+
+# Ejecutar la consulta
+cursor.execute(consulta_CEE_Agrupada)
+
+# Obtener todos los resultados y almacenarlos en una lista de diccionarios
+resultados_CEE_Agrupada = cursor.fetchall()
+
+print("                        ")
+
+# Imprimir Resultado de la consulta
+Suma_SuperficieHabitable = 0
+for registro in resultados_CEE_Agrupada:
+    print("  ")
+    print(registro)
+    Suma_SuperficieHabitable += registro["SuperficieHabitable"]
+
+print(f"SuperficieHabitable Total: {Suma_SuperficieHabitable} m2")
+# Hacer Operaciones con datos de la Base de Datos
+
 
 # Cierra la conexión
 cur.close()
