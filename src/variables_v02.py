@@ -140,7 +140,7 @@ field_map = {
     './/Calificacion/EmisionesCO2/EscalaGlobal/C': 'CalificacionEmisionesC02EscalaGlobalC',
     './/Calificacion/EmisionesCO2/EscalaGlobal/D': 'CalificacionEmisionesC02EscalaGlobalD',
     './/Calificacion/EmisionesCO2/EscalaGlobal/E': 'CalificacionEmisionesC02EscalaGlobalE',
-    './/Calificacion/EmisionesCO2/EscalaGlobal/F': 'CalificacionEmisionesC02EscalaGlobalF',
+    './/Calificacion/EmisionesCO2/EscalaGlobal/F': 'CalificacionEmisionesC02EscalaGlobalF'
 }
 
 
@@ -155,17 +155,29 @@ field_map_cerramiento = {
 
 field_map_hueco = {
     './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Tipo': 'HuecosyLucernariosTipo',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Superficie': 'HuecosyLucernariosTipo',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Transmitancia': 'HuecosyLucernariosTipo',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionTransmitancia': 'HuecosyLucernarios',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Orientacion': 'HuecosyLucernarios',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionFactorSolar': 'HuecosyLucernarios',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/FactorSolar': 'HuecosyLucernarios',
-    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionTransmitancia': 'HuecosyLucernarios'
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Superficie': 'HuecosyLucernariosSuperficie',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Transmitancia': 'HuecosyLucernariosTransmitancia',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionTransmitancia': 'HuecosyLucernariosModoDeObtencionTransmitancia',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Nombre': 'HuecosyLucernariosNombre',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/Orientacion': 'HuecosyLucernariosOrientacion',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/ModoDeObtencionFactorSolar': 'HuecosyLucernariosModoDeObtencionFactorSolar',
+    './/DatosEnvolventeTermica/HuecosyLucernarios/Elemento/FactorSolar': 'HuecosyLucernariosFactorSolar',
 }
 
-field_map_climatizacion_acs = {
+# field_maps para instalaciones hay que hacerlo de forma dinámica.
+# Lo que si sabemos son las características de los equipos
+# Vamos a definir una Lista
 
+field_list_equipo = ['climacsNombre',
+                     'climacsTipo',
+                     'climacsPotenciaNominal',
+                     'climacsRendimientoNominal',
+                     'climacsFRendimientoEstacional',
+                     'climacsVectorEnergetico',
+                     'climacsVectorModoDeObtencion']
+
+field_map_equipos = {
+    './/InstalacionesTermicas/HuecosyLucernarios/Elemento/Tipo': 'HuecosyLucernariosTipo',
 }
 
 field_map_renovables = {
