@@ -168,13 +168,13 @@ field_map_hueco = {
 # Lo que si sabemos son las características de los equipos
 # Vamos a definir una Lista
 
-field_list_equipo = ['climacsNombre',
-                     'climacsTipo',
-                     'climacsPotenciaNominal',
-                     'climacsRendimientoNominal',
-                     'climacsFRendimientoEstacional',
-                     'climacsVectorEnergetico',
-                     'climacsVectorModoDeObtencion']
+field_list_equipo = [['climacsNombre', 'Nombre'],
+                     ['climacsTipo', 'Tipo'],
+                     ['climacsPotenciaNominal', 'PotenciaNominal'],
+                     ['climacsRendimientoNominal', 'RendimientoNominal'],
+                     ['climacsRendimientoEstacional', 'RendimientoEstacional'],
+                     ['climacsVectorEnergetico', 'VectorEnergetico'],
+                     ['climacsModoDeObtencion', 'ModoDeObtencion']]
 
 field_map_equipos = {
     './/InstalacionesTermicas/HuecosyLucernarios/Elemento/Tipo': 'HuecosyLucernariosTipo',

@@ -342,31 +342,62 @@ conn.commit()
 # Ahora Vamos a Cargar los Equipos de  un ConnectionError
 # Para los Equipos Será necesario Generar el fiel_map en Tiempo Real, Adaptado a cada Fichero
 
-tipos_equipos = []
+
+for campo in field_list_equipo:
+    print(campo[0] + "-" + campo[1])
+
+clase_equipos = []
+
+field_map_equipos = [[]]
 
 
-def create_field_map_equipos(element, current_path=""):
+def create_field_map_equipos(element, clase_equipos_a, field_map_equipos_a, field_list_equipo_a, current_path=""):
     # Construye la ruta del elemento actual
     path = f"{current_path}/{element.tag}"
-
+    # print("Se confirma que entra en la función reate_field_map_equipos")
     # Imprime la ruta del elemento actual y su texto si existe
-    # if element.text and element.text.strip():
-    #     print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
-    # else:
-    #     print(f"Path: {path}, Tag: {element.tag}, Text: None")
-
+    count = 0
     # Recorre los hijos del elemento actual
-    for child in element:
+    countClase = 0
+    for hijo in element:
+        countClase += 1
+
+    for hijo in element:
+        # print("Debería entrar cuando esto fuera igual a: InstalacionesTermicas - ", element.tag)
         if element.tag == "InstalacionesTermicas":
-            tipos_equipos.append(child.tag)
-        create_field_map_equipos(child, path)
+            # print("Confirmar que el programa entra en este parte del programa")
+            # print("Impriemiendo field_map_equipos_a", field_map_equipos_a)
+            clase_equipos_a.append(hijo.tag)
+            for childchild in hijo:
+                typeservice = childchild.tag
+            for campo_a in field_list_equipo_a:
+                ruta = path + "/" + hijo.tag + "/" + \
+                    typeservice + "/" + campo_a[1]
+                ruta_sin_campo = path + "/" + hijo.tag + "/" + typeservice
+                field_map_equipos_a[count].append({ruta:  campo_a[0]})
+                # print("Ruta: ", ruta)
+                # print("Ruta Sin Campo: ", ruta_sin_campo)
+            field_map_equipos_a[count].append(
+                {ruta_sin_campo:  "climacsClaseEquipo"})
+            count += 1
+            if count < countClase:
+                field_map_equipos_a.append([])
+
+        create_field_map_equipos(
+            hijo, clase_equipos_a, field_map_equipos_a, field_list_equipo_a,  path)
+
+    return field_map_equipos_a
 
 
 # Inicia la función recursiva desde el elemento raíz para sacar los tipos de equipos
-create_field_map_equipos(root)
+field_map_equipos = create_field_map_equipos(
+    root, clase_equipos, field_map_equipos, field_list_equipo, "")
 
-print('Imprimiendo Los Tipos de Equipos en Instalaciones Térmicas')
-print(tipos_equipos)
+print("Imprimiendo el mapa de variables de los equipos de Climatización/ACS")
+print(field_map_equipos)
+
+print('Imprimiendo Las Clases de Equipos de Climatización y ACS')
+print(clase_equipos)
 
 # print_element_paths(root)
 
@@ -422,7 +453,7 @@ resultados_CEE = cursor.fetchall()
 # Obtener Datos Agregados de tabla CEE
 
 consulta_CEE_Agrupada = """
-SELECT 
+SELECT
     Provincia,
     COUNT(*) AS Numero_CEE,
     SUM(SuperficieHabitable) AS SuperficieHabitable,
@@ -437,9 +468,9 @@ SELECT
     SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableACSn_Total,
     SUM(EmisionesCO2Global) AS ConsumoEnergiaPrimariaNoRenovableIluminacion_Total,
     COUNT(DISTINCT Municipio) AS Numero_Municipios
-FROM 
+FROM
     CEE
-GROUP BY 
+GROUP BY
     Provincia;
 """
 
