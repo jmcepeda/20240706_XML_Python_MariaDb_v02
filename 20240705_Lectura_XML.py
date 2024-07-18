@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-from src.variables_v02 import field_map
+from src.variables_v02 import field_map, field_map_cerramiento, field_map_hueco, field_list_equipo
 # from pymongo import MongoClient
 
 # from pymongo import MongoClient
@@ -187,7 +187,7 @@ conn.commit()
 # Carga y parsea el archivo XML
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
-RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
+# RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
 # RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
 # RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
 
@@ -204,7 +204,7 @@ def print_element_paths(element, current_path=""):
     if element.text and element.text.strip():
         print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
     else:
-        print(f"Path: {path}, Text: None")
+        print(f"Path: {path}, Tag: {element.tag}, Text: None")
 
     # Recorre los hijos del elemento actual
     for child in element:
@@ -282,7 +282,7 @@ my_field_map.update(field_map)
 query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({', '.join(['%s'] * len(my_field_map))})"
 
 print("Imprimir Consulta Completa para Insertar")
-print(query)
+# print(query)
 
 # Recorre los elementos del XML y extrae los datos deseados
 
@@ -300,7 +300,7 @@ for xml_field, db_field in field_map.items():
     #     value = root.find(xml_field).text
 
     values.append(value)
-    print(xml_field, ' - ', value)
+    # print(xml_field, ' - ', value)
 
 # print("Imprimiendo Valores de los campos")
 # print(tuple(values))
@@ -320,19 +320,55 @@ print(fecha_actual)
 values.insert(0, fecha_actual)
 
 print("Imprimiendo Valores de los campos Tras Añadir Fecha de Registro")
-print(tuple(values))
+# print(tuple(values))
 
 # Inserta los datos en la base de datos
 cur.execute(query, tuple(values))
 
 # cur.execute(SENTENCIASQL)
 
-print(values)
+# print(values)
 
 
 # Confirma los cambios
 conn.commit()
 
+# Ahora Vamos a cargar Cerramientos de un CEE
+
+
+# Ahora Vamos a Cargar Huecos de un CEE
+
+
+# Ahora Vamos a Cargar los Equipos de  un ConnectionError
+# Para los Equipos Será necesario Generar el fiel_map en Tiempo Real, Adaptado a cada Fichero
+
+tipos_equipos = []
+
+
+def create_field_map_equipos(element, current_path=""):
+    # Construye la ruta del elemento actual
+    path = f"{current_path}/{element.tag}"
+
+    # Imprime la ruta del elemento actual y su texto si existe
+    # if element.text and element.text.strip():
+    #     print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
+    # else:
+    #     print(f"Path: {path}, Tag: {element.tag}, Text: None")
+
+    # Recorre los hijos del elemento actual
+    for child in element:
+        if element.tag == "InstalacionesTermicas":
+            tipos_equipos.append(child.tag)
+        create_field_map_equipos(child, path)
+
+
+# Inicia la función recursiva desde el elemento raíz para sacar los tipos de equipos
+create_field_map_equipos(root)
+
+print('Imprimiendo Los Tipos de Equipos en Instalaciones Térmicas')
+print(tipos_equipos)
+
+# print_element_paths(root)
 
 # Ahora toca hacer una consulta de datos
 
@@ -381,7 +417,7 @@ cursor.execute(consulta_CEE)
 resultados_CEE = cursor.fetchall()
 
 # Imprimir Resultado de la consulta
-print(resultados_CEE)
+# print(resultados_CEE)
 
 # Obtener Datos Agregados de tabla CEE
 
