@@ -388,7 +388,7 @@ def create_field_map_equipos(element, clase_equipos_a, field_map_equipos_a, fiel
                 # print("Ruta: ", ruta)
                 # print("Ruta Sin Campo: ", ruta_sin_campo)
             field_map_equipos_b.update(
-                {ruta_sin_campo:  "climacsClaseEquipo"})
+                {ruta_sin_campo:  "climacsClase"})
             field_map_equipos_a[count].append(field_map_equipos_b)
             # field_map_equipos_b[count].update({ruta_sin_campo:  "climacsClaseEquipo"})
             count += 1
@@ -421,14 +421,14 @@ SENTENCIASQL = """CREATE TABLE IF NOT EXISTS EQUIPOSCEE
 (idEquipo INT NOT NULL AUTO_INCREMENT,
 idCee INT NOT NULL,
 DateRegistro DATETIME NOT NULL,
-ClimacsNombre VARCHAR(80) NOT NULL,
-ClimacsClase VARCHAR(80) NOT NULL,
-ClimacsTipo VARCHAR(80) NOT NULL,
-ClimacsPotenciaNominal DEC(10,6) NOT NULL,
-ClimacsRendimientoNominal DEC(10,6) NOT NULL,
-ClimacsRendimientoEstacional DEC(10,6) NOT NULL,
-ClimacsVectorEnergetico VARCHAR(80) NOT NULL,
-ClimacsModoDeObtencion VARCHAR(80) NOT NULL,
+climacsNombre VARCHAR(80) NOT NULL,
+climacsClase VARCHAR(80) NOT NULL,
+climacsTipo VARCHAR(80) NOT NULL,
+climacsPotenciaNominal DEC(10,6) NOT NULL,
+climacsRendimientoNominal DEC(10,6) NOT NULL,
+climacsRendimientoEstacional DEC(10,6) NOT NULL,
+climacsVectorEnergetico VARCHAR(80) NOT NULL,
+climacsModoDeObtencion VARCHAR(80) NOT NULL,
 PRIMARY KEY (idEquipo)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
@@ -455,10 +455,12 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
                 j += 1
 
             for grandchild in hijo:
+                r = 0
                 my_field_map_equiposs = {
                     'Sin_Datos_en_XML1': 'idCee',
                     'Sin_Datos_en_XML2': 'DateRegistro'}
                 print("my_field_map_equipo : ", my_field_map_equiposs)
+                strcampos = "idCee, DateRegistro"
                 values_list = []
                 print("grandchild.tag: ", grandchild.tag)
                 print("idclase: ", idclase)
@@ -475,18 +477,19 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
                         field_map_equipos_b[idclase][0])
                 print("my_field_map_equipo : ", my_field_map_equiposs)
                 for campo_c in grandchild:
-                    print("campo_c: ", campo_c.tag)
-                    if root.find(xml_field) is not None:
-                        value_equipos = convert_type(campo_c.text)
-                    else:
-                        # value = root.find(xml_field).text
-                        value_equipos = None
 
+                    print("campo_c: ", campo_c.tag)
+                    strcampos = strcampos + ", " + campo_c.tag
+                    #     my_field_map_equiposs
+                    value_equipos = convert_type(campo_c.text)
                     values_list.append(value_equipos)
+                    r += 1
                 fecha_actual_equipo = datetime.now()
                 values_list.insert(0, fecha_actual_equipo)
                 values_list.insert(0, idequipo)
-                query_equipos = f"INSERT INTO EQUIPOSCEE({', '.join(my_field_map_equiposs.values())}) VALUES({', '.join(['%s'] * len(my_field_map_equiposs))})"
+                # query_equipos = f"INSERT INTO EQUIPOSCEE({', '.join(my_field_map_equiposs.values())}) VALUES({', '.join(['%s'] * len(my_field_map_equiposs))})"
+                query_equipos = f"INSERT INTO EQUIPOSCEE({strcampos}) VALUES({', '.join(['%s'] * len(my_field_map_equiposs))})"
+
                 print("query_equipos: ", query_equipos)
                 print("values: ", values_list)
                 cur.execute(query_equipos, tuple(values_list))
