@@ -202,7 +202,8 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {
+              element.text.strip()}")
     else:
         print(f"Path: {path}, Tag: {element.tag}, Text: None")
 
@@ -279,7 +280,8 @@ my_field_map = {
 my_field_map.update(field_map)
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({', '.join(['%s'] * len(my_field_map))})"
+query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({
+    ', '.join(['%s'] * len(my_field_map))})"
 
 print("Imprimir Consulta Completa para Insertar")
 # print(query)
@@ -398,6 +400,25 @@ print(field_map_equipos)
 
 print('Imprimiendo Las Clases de Equipos de Climatización y ACS')
 print(clase_equipos)
+
+# Ahora Vamos a hacer la consulta para cargar los EQUIPOS de Climatización de un CEE
+# Es muy importante ver con chatGPT como identifico el idCee al cual voy a vincular los equipos, huecos, etc
+
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS EQUIPOSCEE
+(idEquipo INT NOT NULL AUTO_INCREMENT,
+idCee INT NOT NULL Integer NOT NULL,
+DateRegistro DATETIME NOT NULL,
+ClimacsNombre VARCHAR(80) NOT NULL,
+ClimacsClase VARCHAR(80) NOT NULL,
+ClimacsTipo VARCHAR(80) NOT NULL,
+ClimacsPotenciaNominal DEC(10,6) NOT NULL,
+ClimacsRendimientoNominal DEC(10,6) NOT NULL,
+ClimacsRendimientoEstacional DEC(10,6) NOT NULL,
+ClimacsVectorEnergetico VARCHAR(80) NOT NULL,
+ClimacsModoDeObtencion VARCHAR(80) NOT NULL,
+PRIMARY KEY (idEquipo)
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"""
 
 # print_element_paths(root)
 
