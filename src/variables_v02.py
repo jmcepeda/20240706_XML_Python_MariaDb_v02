@@ -30,6 +30,8 @@ field_map = {
     './/DatosGeneralesyGeometria/PorcentajeSuperficieAcristalada/S': 'PorcentajeSuperficieAcristaladaS',
     './/DatosGeneralesyGeometria/PorcentajeSuperficieAcristalada/SO': 'PorcentajeSuperficieAcristaladaSO',
     './/DatosGeneralesyGeometria/PorcentajeSuperficieAcristalada/SE': 'PorcentajeSuperficieAcristaladaSE',
+    './/InstalacionesIluminacion/PotenciaTotalInstalada': 'IluminacionPotenciaTotalInstalada',
+
     './/Demanda/EdificioObjeto/Global': 'DemandaEdificioObjetoGlobal',
     './/Demanda/EdificioObjeto/ACS': 'DemandaEdificioObjetoACS',
     './/Demanda/EdificioObjeto/Refrigeracion': 'DemandaEdificioObjetoRefrigeracion',

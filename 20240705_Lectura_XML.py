@@ -62,6 +62,7 @@ PorcentajeSuperficieAcristaladaN DEC(18,8),
 PorcentajeSuperficieAcristaladaS DEC(18,8),
 PorcentajeSuperficieAcristaladaSO DEC(18,8),
 PorcentajeSuperficieAcristaladaSE DEC(18,8),
+IluminacionPotenciaTotalInstalada DEC(18,8),
 DemandaEdificioObjetoGlobal DEC(18,8) NOT NULL,
 DemandaEdificioObjetoACS DEC(18,8) NOT NULL,
 DemandaEdificioObjetoRefrigeracion DEC(18,8) NOT NULL,
@@ -385,26 +386,6 @@ def create_field_map_equipos(element, clase_equipos_a, field_list_equipo_a, curr
             # print("Confirmar que el programa entra en este parte del programa")
             # print("Impriemiendo field_map_equipos_a", field_map_equipos_a)
             clase_equipos_a.append(hijo.tag)
-            # for childchild in hijo:
-            #     typeservice = childchild.tag
-            # field_map_equipos_b = {}
-            # for campo_a in field_list_equipo_a:
-            #     ruta = path + "/" + hijo.tag + "/" + \
-            #         typeservice + "/" + campo_a[1]
-            #     ruta_sin_campo = path + "/" + hijo.tag + "/" + typeservice
-            #     # field_map_equipos_a[count].append({ruta:  campo_a[0]})
-            #     # field_map_equipos_a[count].update({ruta:  campo_a[0]})
-            #     field_map_equipos_b.update({ruta:  campo_a[0]})
-
-            #     # print("Ruta: ", ruta)
-            #     # print("Ruta Sin Campo: ", ruta_sin_campo)
-            # field_map_equipos_b.update(
-            #     {ruta_sin_campo:  "climacsClase"})
-            # field_map_equipos_a[count].append(field_map_equipos_b)
-            # # field_map_equipos_b[count].update({ruta_sin_campo:  "climacsClaseEquipo"})
-            # count += 1
-            # if count < countClase:
-            #     field_map_equipos_a.append([])
 
         create_field_map_equipos(
             hijo, clase_equipos_a, field_list_equipo_a,  path)
@@ -491,16 +472,6 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
                 print("idclase: ", idclase)
                 print("k: ", k)
 
-                # if k == 0:
-                #     # 20240722 Seguir por aquí
-                #     # my_field_map_equipos = field_map_equipos_b[idclase][0]
-                #     # my_field_map_equiposs.update(
-                #     #     field_map_equipos_b[idclase][0])
-                #     # print("Dirección: ", field_map_equipos_b[idclase][0])
-                # else:
-                #     #     my_field_map_equiposs.update(
-                #     #         field_map_equipos_b[idclase][0])
-                #     # print("my_field_map_equipo : ", my_field_map_equiposs)
                 num_campos_equipo = 0
                 for campo_c in grandchild:
 
@@ -516,9 +487,6 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
                 values_list.insert(0, idCEE_a)
                 values_list.insert(0, clase_equipos_b[idclase])
 
-                # query_equipos = f"INSERT INTO EQUIPOSCEE({', '.join(my_field_map_equiposs.values())}) VALUES({', '.join(['%s'] * len(my_field_map_equiposs))})"
-                # query_equipos = f"INSERT INTO EQUIPOSCEE ({strcampos}) VALUES({
-                #     ', '.join(['%s'] * len(my_field_map_equiposs))})"
                 query_equipos = f"INSERT INTO EQUIPOSCEE({strcampos}) VALUES({', '.join(['%s'] * (num_campos_equipo+3))})"
 
                 print("query_equipos: ", query_equipos)
@@ -537,9 +505,7 @@ mount_field_map_equipos_all(
     root, clase_equipos, field_map_equipos, idCEE, "")
 
 
-# Ahora Vamos a Cargar los Cerramientos
-# Primero los Cerramientos Opacos
-# Y Luego los Huecos
+# Ahora Vamos a Cargar la Envolvente Térmica
 # ________________________________________________________
 # ________________________________________________________
 
@@ -594,7 +560,7 @@ print(clase_cerram_ciegos)
 # Es muy importante ver con chatGPT como identifico el idCee al cual voy a vincular los equipos, huecos, etc
 
 SENTENCIASQL = """CREATE TABLE IF NOT EXISTS ENVOLVENTETERMICACEE
-(idcerramCiego INT NOT NULL AUTO_INCREMENT,
+(idenvolventeTermica INT NOT NULL AUTO_INCREMENT,
 idCee INT NOT NULL,
 envolventeTermicaDateRegistro DATETIME NOT NULL,
 envolventeTermicaNombre VARCHAR(150),
@@ -609,7 +575,7 @@ envolventeTermicaOrientacion VARCHAR(80),
 envolventeTermicaLongitud DEC(14,6),
 envolventeTermicaFactorSolar DEC(14,6),
 envolventeTermicaModoDeObtencionFactorSolar VARCHAR(80),
-PRIMARY KEY (idcerramCiego)
+PRIMARY KEY (idenvolventeTermica)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
 
@@ -677,6 +643,127 @@ def mount_field_map_envol_termica_all(element, clase_envol_termica_b, idCEE_a, c
 
 mount_field_map_envol_termica_all(
     root, clase_cerram_ciego, idCEE, "")
+
+
+# ________________________________________________________
+# ________________________________________________________
+
+
+# Ahora Vamos a Cargar la Iluminación
+# ________________________________________________________
+# ________________________________________________________
+
+
+clase_ciluminación = []
+
+field_map_iluminación = [[]]
+
+field_list_iluminacion = []
+
+
+# def create_field_map_iluminacion(element, clase_iluminacion_a, field_list_iluminacion_a, current_path=""):
+#     # Construye la ruta del elemento actual
+#     path = f"{current_path}/{element.tag}"
+#     # Imprime la ruta del elemento actual y su texto si existe
+#     count = 0
+#     # Recorre los hijos del elemento actual
+#     countClase = 0
+#     for hijo in element:
+#         countClase += 1
+
+#     for hijo in element:
+#         # print("Debería entrar cuando esto fuera igual a: InstalacionesTermicas - ", element.tag)
+#         if element.tag == "InstalacionesIluminacion":
+#             # print("Confirmar que el programa entra en este parte del programa")
+#             # print("Impriemiendo field_map_equipos_a", field_map_equipos_a)
+#             clase_cerram_ciego_a.append(hijo.tag)
+#             # for childchild in hijo:
+
+#         create_field_map_cerram_ciegos(
+#             hijo, clase_cerram_ciego_a, field_list_cerram_ciego_a,  path)
+
+#     return clase_cerram_ciego_a
+
+
+# Voy a rescatar información del ID del Elemento
+
+
+# Inicia la función recursiva desde el elemento raíz para sacar los tipos de equipos
+# clase_cerram_ciegos = create_field_map_cerram_ciegos(
+#     root, clase_cerram_ciego, field_list_cerram_ciego, "")
+
+
+# print('Imprimiendo Las Clases de Cerramientos Ciegos')
+# print(clase_cerram_ciegos)
+
+# Ahora Vamos a hacer la consulta para cargar los EQUIPOS de Climatización de un CEE
+# Es muy importante ver con chatGPT como identifico el idCee al cual voy a vincular los equipos, huecos, etc
+
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS ILUMINACIONCEE
+(idiluminacion INT NOT NULL AUTO_INCREMENT,
+idCee INT NOT NULL,
+iluminacionDateRegistro DATETIME NOT NULL,
+iluminacionNombre VARCHAR(150),
+envolventeTermicaTipo VARCHAR(80),
+eiluminacionModoDeObtencion VARCHAR(80),
+iluminacionVEEI DEC(14,6)
+PRIMARY KEY (idiluminacion)
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"""
+
+# cur = conn.cursor()
+cur.execute(SENTENCIASQL)
+conn.commit()
+
+
+def mount_field_map_iluminacion_all(element, idCEE_a, current_path=""):
+    k = 0
+    query_envol_termica = ""
+    for hijo in element:
+        j = 0
+        # idclase = 0
+        if element.tag == "InstalacionesIluminacion" & hijo.tag != 'PotenciaTotalInstalada':
+
+            # for grandchild in hijo:
+            r = 0
+
+            strcampos = "idCee, iluminacionDateRegistro"
+            values_list = []
+            # print("grandchild.tag: ", grandchild.tag)
+            # print("idclase: ", idclase)
+            print("k: ", k)
+
+            num_campos_iluminacion = 0
+            for campo_c in hijo:
+
+                print("campo_c: ", campo_c.tag)
+                if campo_c.tag != "Capas":
+                    strcampos = strcampos + ", iluminacion" + campo_c.tag
+                    #     my_field_map_equiposs
+                    value_iluminacion = convert_type(campo_c.text)
+                    values_list.append(value_iluminacion)
+                    num_campos_iluminacion += 1
+                    r += 1
+            fecha_actual_iluminacion = datetime.now()
+            values_list.insert(0, fecha_actual_iluminacion)
+            values_list.insert(0, idCEE_a)
+            # values_list.insert(0, clase_iluminacion_b[idclase])
+
+            query_iluminacion = f"INSERT INTO ILUMINACIONCEE ({strcampos}) VALUES({', '.join(['%s'] * (num_campos_iluminacion+3))})"
+
+            print("query_iluminacion: ", query_iluminacion)
+            print("values: ", values_list)
+            cur.execute(query_iluminacion, tuple(values_list))
+            conn.commit()
+
+            k += 1
+
+        # if campo_c.tag != "capas":
+        mount_field_map_iluminacion_all(hijo, idCEE_a,  "")
+    return
+
+
+mount_field_map_iluminacion_all(root, idCEE, "")
 
 
 # ________________________________________________________
