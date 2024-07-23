@@ -17,9 +17,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        # host="192.168.50.143",
+        host="192.168.50.143",
         # Para Windows/remote
-        host="www.multiplicarsantiponce.duckdns.org",
+        # host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -190,7 +190,7 @@ conn.commit()
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
 # RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
-# RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
+RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
 # RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
 
 
@@ -204,7 +204,8 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {
+              element.text.strip()}")
     else:
         print(f"Path: {path}, Tag: {element.tag}, Text: None")
 
@@ -246,9 +247,20 @@ print(CalifiacionEmisiones.text)
 
 
 def convert_type(value):
+
+    try:
+        if value is None:
+            return None
+    except ValueError:
+        pass
+
     # Detectar y convertir enteros
-    if value.isdigit():
-        return int(value)
+    print('value: ', value)
+    try:
+        if value.isdigit():
+            return int(value)
+    except ValueError:
+        pass
 
     # Detectar y convertir flotantes
     try:
@@ -281,7 +293,8 @@ my_field_map = {
 my_field_map.update(field_map)
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({', '.join(['%s'] * len(my_field_map))})"
+query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({
+    ', '.join(['%s'] * len(my_field_map))})"
 
 print("Imprimir Consulta Completa para Insertar")
 # print(query)
@@ -336,8 +349,8 @@ cur.execute(query, tuple(values))
 conn.commit()
 
 
-idequipo = cur.lastrowid
-print("Este es el Id delÚltimo CEE Registrado en la Base de Datos: ", idequipo)
+idCEE = cur.lastrowid
+print("Este es el Id delÚltimo CEE Registrado en la Base de Datos: ", idCEE)
 
 # Ahora Vamos a cargar Cerramientos de un CEE
 
@@ -357,7 +370,7 @@ clase_equipos = []
 field_map_equipos = [[]]
 
 
-def create_field_map_equipos(element, clase_equipos_a, field_map_equipos_a, field_list_equipo_a, current_path=""):
+def create_field_map_equipos(element, clase_equipos_a, field_list_equipo_a, current_path=""):
     # Construye la ruta del elemento actual
     path = f"{current_path}/{element.tag}"
     # print("Se confirma que entra en la función reate_field_map_equipos")
@@ -374,39 +387,39 @@ def create_field_map_equipos(element, clase_equipos_a, field_map_equipos_a, fiel
             # print("Confirmar que el programa entra en este parte del programa")
             # print("Impriemiendo field_map_equipos_a", field_map_equipos_a)
             clase_equipos_a.append(hijo.tag)
-            for childchild in hijo:
-                typeservice = childchild.tag
-            field_map_equipos_b = {}
-            for campo_a in field_list_equipo_a:
-                ruta = path + "/" + hijo.tag + "/" + \
-                    typeservice + "/" + campo_a[1]
-                ruta_sin_campo = path + "/" + hijo.tag + "/" + typeservice
-                # field_map_equipos_a[count].append({ruta:  campo_a[0]})
-                # field_map_equipos_a[count].update({ruta:  campo_a[0]})
-                field_map_equipos_b.update({ruta:  campo_a[0]})
+            # for childchild in hijo:
+            #     typeservice = childchild.tag
+            # field_map_equipos_b = {}
+            # for campo_a in field_list_equipo_a:
+            #     ruta = path + "/" + hijo.tag + "/" + \
+            #         typeservice + "/" + campo_a[1]
+            #     ruta_sin_campo = path + "/" + hijo.tag + "/" + typeservice
+            #     # field_map_equipos_a[count].append({ruta:  campo_a[0]})
+            #     # field_map_equipos_a[count].update({ruta:  campo_a[0]})
+            #     field_map_equipos_b.update({ruta:  campo_a[0]})
 
-                # print("Ruta: ", ruta)
-                # print("Ruta Sin Campo: ", ruta_sin_campo)
-            field_map_equipos_b.update(
-                {ruta_sin_campo:  "climacsClase"})
-            field_map_equipos_a[count].append(field_map_equipos_b)
-            # field_map_equipos_b[count].update({ruta_sin_campo:  "climacsClaseEquipo"})
-            count += 1
-            if count < countClase:
-                field_map_equipos_a.append([])
+            #     # print("Ruta: ", ruta)
+            #     # print("Ruta Sin Campo: ", ruta_sin_campo)
+            # field_map_equipos_b.update(
+            #     {ruta_sin_campo:  "climacsClase"})
+            # field_map_equipos_a[count].append(field_map_equipos_b)
+            # # field_map_equipos_b[count].update({ruta_sin_campo:  "climacsClaseEquipo"})
+            # count += 1
+            # if count < countClase:
+            #     field_map_equipos_a.append([])
 
         create_field_map_equipos(
-            hijo, clase_equipos_a, field_map_equipos_a, field_list_equipo_a,  path)
+            hijo, clase_equipos_a, field_list_equipo_a,  path)
 
-    return field_map_equipos_a, clase_equipos_a
+    return clase_equipos_a
 
 
 # Voy a rescatar información del ID del Elemento
 
 
 # Inicia la función recursiva desde el elemento raíz para sacar los tipos de equipos
-field_map_equipos, clase_equipos = create_field_map_equipos(
-    root, clase_equipos, field_map_equipos, field_list_equipo, "")
+clase_equipos = create_field_map_equipos(
+    root, clase_equipos, field_list_equipo, "")
 
 print("Imprimiendo el mapa de variables de los equipos de Climatización/ACS")
 print(field_map_equipos)
@@ -420,15 +433,28 @@ print(clase_equipos)
 SENTENCIASQL = """CREATE TABLE IF NOT EXISTS EQUIPOSCEE
 (idEquipo INT NOT NULL AUTO_INCREMENT,
 idCee INT NOT NULL,
-DateRegistro DATETIME NOT NULL,
+climacsDateRegistro DATETIME NOT NULL,
 climacsNombre VARCHAR(80) NOT NULL,
 climacsClase VARCHAR(80) NOT NULL,
 climacsTipo VARCHAR(80) NOT NULL,
-climacsPotenciaNominal DEC(10,6) NOT NULL,
-climacsRendimientoNominal DEC(10,6) NOT NULL,
-climacsRendimientoEstacional DEC(10,6) NOT NULL,
-climacsVectorEnergetico VARCHAR(80) NOT NULL,
-climacsModoDeObtencion VARCHAR(80) NOT NULL,
+climacsPotenciaNominal DEC(14,6),
+climacsRendimientoNominal DEC(14,6),
+climacsRendimientoEstacional DEC(14,6),
+climacsVectorEnergetico VARCHAR(80),
+climacsModoDeObtencion VARCHAR(80),
+climacsRecuperacionEnergia VARCHAR(80),
+climacsServicioAsociado VARCHAR(80),
+climacsConsumoDeEnergia DEC(14,6),
+climacsEnfriamientoEvaporativo VARCHAR(80),
+climacsEnfriamientoGratuito VARCHAR(80),
+climacsPotenciaCalor DEC(14,6),
+climacsPotenciaFrio DEC(14,6),
+climacsRendimientoCalor DEC(14,6),
+climacsRendimientoEstacionalCalor DEC(14,6),
+climacsRendimientoEstacionalFrio DEC(14,6),
+climacsRendimientoFrio DEC(14,6),
+climacsZonaAsociada VARCHAR(300),
+climacsTipoControl VARCHAR(80),
 PRIMARY KEY (idEquipo)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
@@ -438,7 +464,7 @@ cur.execute(SENTENCIASQL)
 conn.commit()
 
 
-def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, idequipo_a, current_path=""):
+def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, idCEE_a, current_path=""):
     k = 0
     query_equipos = ""
     for hijo in element:
@@ -457,38 +483,46 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
             for grandchild in hijo:
                 r = 0
                 my_field_map_equiposs = {
+                    # 'Sin_Datos_en_XML0': 'climacsClase',
                     'Sin_Datos_en_XML1': 'idCee',
                     'Sin_Datos_en_XML2': 'DateRegistro'}
                 print("my_field_map_equipo : ", my_field_map_equiposs)
-                strcampos = "idCee, DateRegistro"
+                strcampos = "climacsClase, idCee, climacsDateRegistro"
                 values_list = []
                 print("grandchild.tag: ", grandchild.tag)
                 print("idclase: ", idclase)
                 print("k: ", k)
 
-                if k == 0:
-                    # 20240722 Seguir por aquí
-                    # my_field_map_equipos = field_map_equipos_b[idclase][0]
-                    my_field_map_equiposs.update(
-                        field_map_equipos_b[idclase][0])
-                    print("Dirección: ", field_map_equipos_b[idclase][0])
-                else:
-                    my_field_map_equiposs.update(
-                        field_map_equipos_b[idclase][0])
-                print("my_field_map_equipo : ", my_field_map_equiposs)
+                # if k == 0:
+                #     # 20240722 Seguir por aquí
+                #     # my_field_map_equipos = field_map_equipos_b[idclase][0]
+                #     # my_field_map_equiposs.update(
+                #     #     field_map_equipos_b[idclase][0])
+                #     # print("Dirección: ", field_map_equipos_b[idclase][0])
+                # else:
+                #     #     my_field_map_equiposs.update(
+                #     #         field_map_equipos_b[idclase][0])
+                #     # print("my_field_map_equipo : ", my_field_map_equiposs)
+                num_campos_equipo = 0
                 for campo_c in grandchild:
 
                     print("campo_c: ", campo_c.tag)
-                    strcampos = strcampos + ", " + campo_c.tag
+                    strcampos = strcampos + ", climacs" + campo_c.tag
                     #     my_field_map_equiposs
                     value_equipos = convert_type(campo_c.text)
                     values_list.append(value_equipos)
+                    num_campos_equipo += 1
                     r += 1
                 fecha_actual_equipo = datetime.now()
                 values_list.insert(0, fecha_actual_equipo)
-                values_list.insert(0, idequipo)
+                values_list.insert(0, idCEE_a)
+                values_list.insert(0, clase_equipos_b[idclase])
+
                 # query_equipos = f"INSERT INTO EQUIPOSCEE({', '.join(my_field_map_equiposs.values())}) VALUES({', '.join(['%s'] * len(my_field_map_equiposs))})"
-                query_equipos = f"INSERT INTO EQUIPOSCEE({strcampos}) VALUES({', '.join(['%s'] * len(my_field_map_equiposs))})"
+                # query_equipos = f"INSERT INTO EQUIPOSCEE ({strcampos}) VALUES({
+                #     ', '.join(['%s'] * len(my_field_map_equiposs))})"
+                query_equipos = f"INSERT INTO EQUIPOSCEE ({strcampos}) VALUES({
+                    ', '.join(['%s'] * (num_campos_equipo+3))})"
 
                 print("query_equipos: ", query_equipos)
                 print("values: ", values_list)
@@ -498,39 +532,184 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
                 k += 1
 
         mount_field_map_equipos_all(
-            hijo, clase_equipos_b, field_map_equipos_b, idequipo_a,  "")
+            hijo, clase_equipos_b, field_map_equipos_b, idCEE_a,  "")
     return
 
 
 mount_field_map_equipos_all(
-    root, clase_equipos, field_map_equipos, idequipo, "")
+    root, clase_equipos, field_map_equipos, idCEE, "")
+
+
+# Ahora Vamos a Cargar los Cerramientos
+# Primero los Cerramientos Opacos
+# Y Luego los Huecos
+# ________________________________________________________
+# ________________________________________________________
+
+
+# Ahora Vamos a Cargar los Equipos de  un ConnectionError
+# Para los Equipos Será necesario Generar el fiel_map en Tiempo Real, Adaptado a cada Fichero
+
+
+clase_cerram_ciego = []
+
+field_map_cerram_ciego = [[]]
+
+
+def create_field_map_cerram_ciegos(element, clase_cerram_ciego_a, field_list_cerram_ciego_a, current_path=""):
+    # Construye la ruta del elemento actual
+    path = f"{current_path}/{element.tag}"
+    # Imprime la ruta del elemento actual y su texto si existe
+    count = 0
+    # Recorre los hijos del elemento actual
+    countClase = 0
+    for hijo in element:
+        countClase += 1
+
+    for hijo in element:
+        # print("Debería entrar cuando esto fuera igual a: InstalacionesTermicas - ", element.tag)
+        if element.tag == "CerramientosOpacos":
+            # print("Confirmar que el programa entra en este parte del programa")
+            # print("Impriemiendo field_map_equipos_a", field_map_equipos_a)
+            clase_cerram_ciego_a.append(hijo.tag)
+            # for childchild in hijo:
+
+        create_field_map_cerram_ciegos(
+            hijo, clase_cerram_ciego_a, field_list_cerram_ciego_a,  path)
+
+    return clase_cerram_ciego_a
+
+
+# Voy a rescatar información del ID del Elemento
+
+
+# Inicia la función recursiva desde el elemento raíz para sacar los tipos de equipos
+clase_cerram_ciegos = create_field_map_cerram_ciegos(
+    root, clase_equipos, field_list_equipo, "")
+
+
+print('Imprimiendo Las Clases de Cerramientos Ciegos')
+print(clase_cerram_ciegos)
+
+# Ahora Vamos a hacer la consulta para cargar los EQUIPOS de Climatización de un CEE
+# Es muy importante ver con chatGPT como identifico el idCee al cual voy a vincular los equipos, huecos, etc
+
+SENTENCIASQL = """CREATE TABLE IF NOT EXISTS CERRAMCIEGOSCEE
+(idCerrCiego INT NOT NULL AUTO_INCREMENT,
+idCee INT NOT NULL,
+cerrmCiegoDateRegistro DATETIME NOT NULL,
+cerrmCiegoNombre VARCHAR(80) NOT NULL,
+cerrmCiegoClase VARCHAR(80) NOT NULL,
+cerrmCiegoTipo VARCHAR(80) NOT NULL,
+cerrmCiegoPotenciaNominal DEC(14,6),
+cerrmCiegoRendimientoNominal DEC(14,6),
+cerrmCiegoRendimientoEstacional DEC(14,6),
+cerrmCiegoVectorEnergetico VARCHAR(80),
+cerrmCiegoModoDeObtencion VARCHAR(80),
+cerrmCiegoRecuperacionEnergia VARCHAR(80),
+cerrmCiegoServicioAsociado VARCHAR(80),
+cerrmCiegoConsumoDeEnergia DEC(14,6),
+cerrmCiegoEnfriamientoEvaporativo VARCHAR(80),
+cerrmCiegoEnfriamientoGratuito VARCHAR(80),
+cerrmCiegoPotenciaCalor DEC(14,6),
+PRIMARY KEY (idcerrmCiego)
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"""
+
+# cur = conn.cursor()
+cur.execute(SENTENCIASQL)
+conn.commit()
+
+
+def mount_field_map_cerrm_ciegos_all(element, clase_cerram_ciego_b, idCEE_a, current_path=""):
+    k = 0
+    query_cerram_ciegos = ""
+    for hijo in element:
+        j = 0
+        idclase = 0
+        if element.tag == "CerramientosOpacos":
+            for clase in clase_cerram_ciego_b:
+                print("clase Cerramiento Ciego: ",
+                      clase, " - clase: ", hijo.tag)
+                print("clase Cerramiento Ciego: ", str(clase),
+                      " - clase: ", str(hijo.tag))
+                print("Se Cumple la Condición: ", str(clase) == str(hijo.tag))
+                if str(clase) == str(hijo.tag):
+                    idclase = j
+                j += 1
+
+            for grandchild in hijo:
+                r = 0
+
+                strcampos = "cerramCiegoClase, idCee, cerramCiegoDateRegistro"
+                values_list = []
+                print("grandchild.tag: ", grandchild.tag)
+                print("idclase: ", idclase)
+                print("k: ", k)
+
+                num_campos_cerram_ciegos = 0
+                for campo_c in grandchild:
+
+                    print("campo_c: ", campo_c.tag)
+                    strcampos = strcampos + ", cerramCiego" + campo_c.tag
+                    #     my_field_map_equiposs
+                    value_cerram_ciego = convert_type(campo_c.text)
+                    values_list.append(value_cerram_ciego)
+                    num_campos_cerram_ciegos += 1
+                    r += 1
+                fecha_actual_cerram_ciego = datetime.now()
+                values_list.insert(0, fecha_actual_cerram_ciego)
+                values_list.insert(0, idCEE_a)
+                values_list.insert(0, clase_cerram_ciego_b[idclase])
+
+                query_cerram_ciego = f"INSERT INTO CERRAMCIEGOSCEE ({strcampos}) VALUES({
+                    ', '.join(['%s'] * (num_campos_cerram_ciegos+3))})"
+
+                print("query_equipos: ", query_cerram_ciego)
+                print("values: ", values_list)
+                cur.execute(query_cerram_ciego, tuple(values_list))
+                conn.commit()
+
+                k += 1
+
+        mount_field_map_cerrm_ciegos_all(
+            hijo, clase_cerram_ciego_b, idCEE_a,  "")
+    return
+
+
+mount_field_map_cerrm_ciegos_all(
+    root, clase_cerram_ciego, idCEE, "")
+
+
+# ________________________________________________________
+# ________________________________________________________
 
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
 # query = f"INSERT INTO CEE({', '.join(my_field_map_equipos.values())}) VALUES({', '.join(['%s'] * len(mount_field_map_equipos_all))})"
 
 # Rellenar los Valores en Lista values para Integrar
-values = []
-for xml_field_map_equipos, db_field_map_equipos in field_map_equipos.items():
-    # value = root.find(xml_field).text
-    # print('Campo Analizador para Convertir: ', xml_field)
-    # value = convert_type(root.find(xml_field))
-    if root.find(xml_field) is not None:
-        value = convert_type(root.find(xml_field).text)
-    else:
-        # value = root.find(xml_field).text
-        value = None
-    # if xml_field =="DateCee"
-    #     value = root.find(xml_field).text
+# values = []
+# for xml_field_map_equipos, db_field_map_equipos in field_map_equipos.items():
+#     # value = root.find(xml_field).text
+#     # print('Campo Analizador para Convertir: ', xml_field)
+#     # value = convert_type(root.find(xml_field))
+#     if root.find(xml_field) is not None:
+#         value = convert_type(root.find(xml_field).text)
+#     else:
+#         # value = root.find(xml_field).text
+#         value = None
+#     # if xml_field =="DateCee"
+#     #     value = root.find(xml_field).text
 
-    values.append(value)
+#     values.append(value)
 
-# print_element_paths(root)
+# # print_element_paths(root)
 
-# Ahora toca hacer una consulta de datos
+# # Ahora toca hacer una consulta de datos
 
-# Crear un cursor
-cursor = conn.cursor(dictionary=True)
+# # Crear un cursor
+# cursor = conn.cursor(dictionary=True)
 
 # Consulta para obtener los registros de la tabla de viviendas
 consulta_CEE = """
@@ -568,10 +747,10 @@ FROM
 """
 
 # Ejecutar la consulta
-cursor.execute(consulta_CEE)
+cur.execute(consulta_CEE)
 
 # Obtener todos los resultados y almacenarlos en una lista de diccionarios
-resultados_CEE = cursor.fetchall()
+resultados_CEE = cur.fetchall()
 
 # Imprimir Resultado de la consulta
 # print(resultados_CEE)
@@ -601,19 +780,21 @@ GROUP BY
 """
 
 # Ejecutar la consulta
-cursor.execute(consulta_CEE_Agrupada)
+cur.execute(consulta_CEE_Agrupada)
 
 # Obtener todos los resultados y almacenarlos en una lista de diccionarios
-resultados_CEE_Agrupada = cursor.fetchall()
+resultados_CEE_Agrupada = cur.fetchall()
 
 print("                        ")
 
 # Imprimir Resultado de la consulta
 Suma_SuperficieHabitable = 0
+# print(resultados_CEE)
 for registro in resultados_CEE_Agrupada:
     print("  ")
     print(registro)
-    Suma_SuperficieHabitable += registro["SuperficieHabitable"]
+    # if registro["SuperficieHabitable"] is not None:
+    Suma_SuperficieHabitable += float(registro[2])
 
 print(f"SuperficieHabitable Total: {Suma_SuperficieHabitable} m2")
 # Hacer Operaciones con datos de la Base de Datos
