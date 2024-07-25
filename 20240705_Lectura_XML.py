@@ -1,14 +1,21 @@
+from reportlab.lib import colors
+from reportlab.platypus import Image, Table, TableStyle
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+
+import pandas as pd
 import xml.etree.ElementTree as ET
 from datetime import datetime
-
-from src.variables_v02 import field_map, field_map_cerramiento, field_map_hueco, field_list_equipo
+import mysql.connector
+from src.variables_v02 import field_map, field_list_equipo
 # from pymongo import MongoClient
 
 # from pymongo import MongoClient
 
 import sys
 # import mariadb
-import mysql.connector
 
 
 # Datos de conexión
@@ -824,7 +831,7 @@ mount_field_map_zona_all(root, idCEE, "")
 # cursor = conn.cursor(dictionary=True)
 
 # Consulta para obtener los registros de la tabla de viviendas
-consulta_CEE = """
+consulta_CEE = f"""
 SELECT
     NombreDelEdificio,
     Provincia,
@@ -856,6 +863,8 @@ SELECT
     CalificacionEnergiaPrimariaNoRenovableGlobal
 FROM
     CEE
+WHERE
+    idCee= {idCEE}
 """
 
 # Ejecutar la consulta
@@ -1098,7 +1107,135 @@ for ilum in resultados_CEE_Agrupada_Iluminacion:
 
 print("PotenciaTotalIlum:", round(potTotalIlum/1000, 2), " kW")
 
+# consulta_CEE = f"""
+#     NombreDelEdificio,
+#     Provincia,
+#     Municipio,
+#     ZonaClimatica,
+#     SuperficieHabitable,
+#     ReferenciaCatastral,
+#     Procedimiento,
+#     YearConstruccion,
+#     EmisionesCO2Global,
+#     EmisionesCO2Calefaccion,
+#     EmisionesCO2ACS,
+#     EmisionesCO2Refrigeracion,
+#     EmisionesCO2Iluminacion,
+#     CalificacionDemandaCalefaccion,
+#     CalificacionDemandaRefrigeracion,
+#     CalificacionEmisionesC02Calefaccion,
+#     CalificacionEmisionesC02Refrigeracion,
+#     CalificacionEmisionesC02Iluminacion,
+#     CalificacionEmisionesC02Global,
+#     ConsumoEnergiaPrimariaNoRenovableCalefaccion,
+#     ConsumoEnergiaPrimariaNoRenovableGlobal,
+#     ConsumoEnergiaPrimariaNoRenovableACS,
+#     ConsumoEnergiaPrimariaNoRenovableRefrigeracion,
+#     ConsumoEnergiaPrimariaNoRenovableIluminacion,
+#     CalificacionEnergiaPrimariaNoRenovableCalefaccion,
+#     CalificacionEnergiaPrimariaNoRenovableRefrigeracion,
+#     CalificacionEnergiaPrimariaNoRenovableIluminacion,
+#     CalificacionEnergiaPrimariaNoRenovableGlobal
+
 
 # Cierra la conexión
 cur.close()
 conn.close()
+
+
+# Ahora Vamos a pasar a Exportar un Resumen de la Información
+
+lista_clave_CEE = ['NombreDelEdificio',
+                   'Provincia',
+                   'Municipio',
+                   'ZonaClimatica',
+                   'SuperficieHabitable',
+                   'ReferenciaCatastral',
+                   'Procedimiento',
+                   'YearConstruccion',
+                   'EmisionesCO2Global',
+                   'EmisionesCO2Calefaccion',
+                   'EmisionesCO2ACS',
+                   'EmisionesCO2Refrigeracion',
+                   'EmisionesCO2Iluminacion',
+                   'CalificacionDemandaCalefaccion',
+                   'CalificacionDemandaRefrigeracion',
+                   'CalificacionEmisionesC02Calefaccion',
+                   'CalificacionEmisionesC02Refrigeracion',
+                   'CalificacionEmisionesC02Iluminacion',
+                   'CalificacionEmisionesC02Global',
+                   'ConsumoEnergiaPrimariaNoRenovableCalefaccion',
+                   'ConsumoEnergiaPrimariaNoRenovableGlobal',
+                   'ConsumoEnergiaPrimariaNoRenovableACS',
+                   'ConsumoEnergiaPrimariaNoRenovableRefrigeracion',
+                   'ConsumoEnergiaPrimariaNoRenovableIluminacion',
+                   'CalificacionEnergiaPrimariaNoRenovableCalefaccion',
+                   'CalificacionEnergiaPrimariaNoRenovableRefrigeracion',
+                   'CalificacionEnergiaPrimariaNoRenovableIluminacion',
+                   'CalificacionEnergiaPrimariaNoRenovableGlobal']
+
+lista_valor_CEE = resultados_CEE[0]
+print('lista_valor_CEE: ', lista_valor_CEE)
+
+# Crear el diccionario utilizando zip a partir de dos tuplas
+informacion_CEE = dict(zip(lista_clave_CEE, lista_valor_CEE))
+
+print('informacion_CEE: ', informacion_CEE)
+print("resultados_CEE: ", resultados_CEE)
+
+# informacion_casa = dict(zip(claves, valores))
+
+# my_field_map.update(field_map)
+
+# Ruta al archivo de la fuente Arial Bold
+# Reemplaza esto con la ruta correcta
+arial_bold_path = "./src/fuente/ARIALBD.TTF"
+
+# Registrar la fuente
+pdfmetrics.registerFont(TTFont('Arial-Bold', arial_bold_path))
+
+# Convertir los datos a un DataFrame para generar el Excel
+df = pd.DataFrame([informacion_CEE])
+
+# Crear el archivo PDF
+# print(resultados_CEE[0])
+nombreEdificioCEE = resultados_CEE[0][0]
+namefile = str(fecha_actual) + '_' + str(idCEE) + '_' + nombreEdificioCEE
+
+# Guardar el DataFrame como un archivo Excel
+df.to_excel(f"./01_Salida/xlsx/{namefile}_Resumen_CEE.xlsx", index=False)
+
+pdf_path = f"./01_Salida/pdf/{namefile}_Resumen_CEE.pdf"
+pdf = canvas.Canvas(pdf_path, pagesize=letter)
+width, height = letter
+
+# Añadir título al PDF
+pdf.setFont("Arial-Bold", 20)
+pdf.drawCentredString(width / 2, height - 40, "Información del CEE")
+
+# Añadir imagen
+# Reemplaza esto con la ruta a tu imagen
+image_path = "./src/img/Etiqueta_ejemplo-768x990.jpg"
+pdf.drawImage(image_path, 50, height - 300, width=200, height=200)
+
+# Añadir tabla con información de la casa
+data = list(informacion_CEE.items())
+table = Table(data)
+table.setStyle(TableStyle([
+    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+    ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+]))
+
+table.wrapOn(pdf, width, height)
+table.drawOn(pdf, 50, height - 350)
+
+# Guardar y cerrar el PDF
+pdf.save()
+
+print(f"PDF generado: {pdf_path}")
+print("Archivo Excel generado: informacion_casa.xlsx")
