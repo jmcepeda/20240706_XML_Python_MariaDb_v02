@@ -17,9 +17,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        host="192.168.50.143",
+        # host="192.168.50.143",
         # Para Windows/remote
-        # host="www.multiplicarsantiponce.duckdns.org",
+        host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -205,8 +205,7 @@ def print_element_paths(element, current_path=""):
 
     # Imprime la ruta del elemento actual y su texto si existe
     if element.text and element.text.strip():
-        print(f"Path: {path}, Tag: {element.tag}, Text: {
-              element.text.strip()}")
+        print(f"Path: {path}, Tag: {element.tag}, Text: {element.text.strip()}")
     else:
         print(f"Path: {path}, Tag: {element.tag}, Text: None")
 
@@ -294,8 +293,7 @@ my_field_map = {
 my_field_map.update(field_map)
 
 # Prepara la consulta de inserción con los nombres de las columnas mapeadas
-query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({
-    ', '.join(['%s'] * len(my_field_map))})"
+query = f"INSERT INTO CEE({', '.join(my_field_map.values())}) VALUES({', '.join(['%s'] * len(my_field_map))})"
 
 print("Imprimir Consulta Completa para Insertar")
 # print(query)
@@ -489,8 +487,7 @@ def mount_field_map_equipos_all(element, clase_equipos_b, field_map_equipos_b, i
                 values_list.insert(0, idCEE_a)
                 values_list.insert(0, clase_equipos_b[idclase])
 
-                query_equipos = f"INSERT INTO EQUIPOSCEE({strcampos}) VALUES({
-                    ', '.join(['%s'] * (num_campos_equipo+3))})"
+                query_equipos = f"INSERT INTO EQUIPOSCEE({strcampos}) VALUES({', '.join(['%s'] * (num_campos_equipo+3))})"
 
                 print("query_equipos: ", query_equipos)
                 print("values: ", values_list)
@@ -629,8 +626,7 @@ def mount_field_map_envol_termica_all(element, clase_envol_termica_b, idCEE_a, c
                 values_list.insert(0, idCEE_a)
                 values_list.insert(0, clase_envol_termica_b[idclase])
 
-                query_envol_termica = f"INSERT INTO ENVOLVENTETERMICACEE({strcampos}) VALUES({
-                    ', '.join(['%s'] * (num_campos_envol_termica+3))})"
+                query_envol_termica = f"INSERT INTO ENVOLVENTETERMICACEE({strcampos}) VALUES({', '.join(['%s'] * (num_campos_envol_termica+3))})"
 
                 print("query_envolventeTermica: ", query_envol_termica)
                 print("values: ", values_list)
@@ -716,8 +712,7 @@ def mount_field_map_iluminacion_all(element, idCEE_a, current_path=""):
             values_list.insert(0, idCEE_a)
             # values_list.insert(0, clase_iluminacion_b[idclase])
 
-            query_iluminacion = f"INSERT INTO ILUMINACIONCEE({strcampos}) VALUES({
-                ', '.join(['%s'] * (num_campos_iluminacion+2))})"
+            query_iluminacion = f"INSERT INTO ILUMINACIONCEE({strcampos}) VALUES({', '.join(['%s'] * (num_campos_iluminacion+2))})"
 
             print("query_iluminacion: ", query_iluminacion)
             print("values: ", values_list)
@@ -800,8 +795,7 @@ def mount_field_map_zona_all(element, idCEE_a, current_path=""):
             values_list.insert(0, idCEE_a)
             # values_list.insert(0, clase_iluminacion_b[idclase])
 
-            query_zona = f"INSERT INTO ZONASCEE({strcampos}) VALUES({
-                ', '.join(['%s'] * (num_campos_zona+2))})"
+            query_zona = f"INSERT INTO ZONASCEE({strcampos}) VALUES({', '.join(['%s'] * (num_campos_zona+2))})"
 
             print("query_iluminacion: ", query_zona)
             print("values: ", values_list)
@@ -978,8 +972,34 @@ cur.execute(consulta_CEE_Agrupada_Envolvente_Fachada)
 
 # Obtener todos los resultados y almacenarlos en una lista de diccionarios
 resultados_CEE_Agrupada_Envolvente_Fachada = cur.fetchall()
-print("Resultados_CEE_Agrupada_Envolvente:",
+print("Resultados_CEE_Agrupada_Envolvente Fachada:",
       resultados_CEE_Agrupada_Envolvente_Fachada)
+
+
+# Obtener Datos Agregados de tabla Cerramientos-Cubierta de un CEE
+consulta_CEE_Agrupada_Envolvente_Cubierta = f"""
+SELECT
+    COUNT(*) AS Numero_Elementos,
+    envolventeTermicaOrientacion,
+    SUM(envolventeTermicaSuperficie) AS Superficie
+FROM
+    ENVOLVENTETERMICACEE
+WHERE
+    idCee= {idCEE} AND envolventeTermicaClase='CerramientosOpacos' AND envolventeTermicaTipo='Cubierta'
+GROUP BY
+    envolventeTermicaOrientacion;
+"""
+
+print("consulta_CEE_Agrupada_Envolvente: ",
+      consulta_CEE_Agrupada_Envolvente_Cubierta)
+
+# Ejecutar la consulta
+cur.execute(consulta_CEE_Agrupada_Envolvente_Cubierta)
+
+# Obtener todos los resultados y almacenarlos en una lista de diccionarios
+resultados_CEE_Agrupada_Envolvente_Cubierta = cur.fetchall()
+print("Resultados_CEE_Agrupada_Envolvente Cubierta:",
+      resultados_CEE_Agrupada_Envolvente_Cubierta)
 
 
 # Obtener Datos Agregados de tabla Cerramientos-Huecos de un CEE
@@ -992,7 +1012,7 @@ SELECT
 FROM
     ENVOLVENTETERMICACEE
 WHERE
-    idCee= {idCEE} AND envolventeTermicaClase='HuecosyLucernarios' AND envolventeTermicaTipo='Huecos'
+    idCee= {idCEE} AND envolventeTermicaClase='HuecosyLucernarios' AND envolventeTermicaTipo='Hueco'
 GROUP BY
     envolventeTermicaOrientacion;
 """
@@ -1005,8 +1025,38 @@ cur.execute(consulta_CEE_Agrupada_Envolvente_Huecos)
 
 # Obtener todos los resultados y almacenarlos en una lista de diccionarios
 resultados_CEE_Agrupada_Envolvente_Huecos = cur.fetchall()
-print("Resultados_CEE_Agrupada_Envolvente:",
+print("Resultados_CEE_Agrupada_Envolvente Huecos:",
       resultados_CEE_Agrupada_Envolvente_Huecos)
+
+
+# Obtener Datos Agregados de tabla Iluminación de un CEE
+
+consulta_CEE_Agrupada_Iluminacion = f"""
+SELECT
+    COUNT(*) AS Numero_Elementos,
+    iluminacionVEEI,
+    iluminacionIluminanciaMedia,
+    SUM(iluminacionPotenciaInstalada) AS Potencia
+FROM
+    ILUMINACIONCEE
+WHERE
+    idCee= {idCEE} 
+GROUP BY
+    iluminacionVEEI,
+    iluminacionIluminanciaMedia;
+"""
+
+print("consulta_CEE_Agrupada_Iluminacion: ",
+      consulta_CEE_Agrupada_Iluminacion)
+
+# Ejecutar la consulta
+cur.execute(consulta_CEE_Agrupada_Iluminacion)
+
+# Obtener todos los resultados y almacenarlos en una lista de diccionarios
+resultados_CEE_Agrupada_Iluminacion = cur.fetchall()
+print("Resultados_CEE_Agrupada_Iluminacion:",
+      resultados_CEE_Agrupada_Iluminacion)
+
 
 # Cierra la conexión
 cur.close()
