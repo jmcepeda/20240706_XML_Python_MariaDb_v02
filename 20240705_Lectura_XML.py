@@ -964,7 +964,7 @@ GROUP BY
     envolventeTermicaOrientacion;
 """
 
-print("consulta_CEE_Agrupada_Envolvente: ",
+print("consulta_CEE_Agrupada_Envolvente Fachada: ",
       consulta_CEE_Agrupada_Envolvente_Fachada)
 
 # Ejecutar la consulta
@@ -975,6 +975,14 @@ resultados_CEE_Agrupada_Envolvente_Fachada = cur.fetchall()
 print("Resultados_CEE_Agrupada_Envolvente Fachada:",
       resultados_CEE_Agrupada_Envolvente_Fachada)
 
+fachadasO = {}
+supTotalFachada = 0
+for fachada in resultados_CEE_Agrupada_Envolvente_Fachada:
+    fachadasO[fachada[1]] = float(fachada[2])
+    supTotalFachada += float(fachada[2])
+fachadasO["Total"] = float(supTotalFachada)
+
+print("Fachadas:", fachadasO)
 
 # Obtener Datos Agregados de tabla Cerramientos-Cubierta de un CEE
 consulta_CEE_Agrupada_Envolvente_Cubierta = f"""
@@ -990,7 +998,7 @@ GROUP BY
     envolventeTermicaOrientacion;
 """
 
-print("consulta_CEE_Agrupada_Envolvente: ",
+print("consulta_CEE_Agrupada_Envolvente Cubierta: ",
       consulta_CEE_Agrupada_Envolvente_Cubierta)
 
 # Ejecutar la consulta
@@ -1001,6 +1009,14 @@ resultados_CEE_Agrupada_Envolvente_Cubierta = cur.fetchall()
 print("Resultados_CEE_Agrupada_Envolvente Cubierta:",
       resultados_CEE_Agrupada_Envolvente_Cubierta)
 
+cubiertasO = {}
+supTotal = 0
+for cubierta in resultados_CEE_Agrupada_Envolvente_Cubierta:
+    cubiertasO[cubierta[1]] = float(cubierta[2])
+    supTotal += float(cubierta[2])
+cubiertasO["Total"] = float(supTotal)
+
+print("Cubiertas:", cubiertasO)
 
 # Obtener Datos Agregados de tabla Cerramientos-Huecos de un CEE
 
@@ -1017,7 +1033,7 @@ GROUP BY
     envolventeTermicaOrientacion;
 """
 
-print("consulta_CEE_Agrupada_Envolvente: ",
+print("consulta_CEE_Agrupada_Envolvente_Huecos: ",
       consulta_CEE_Agrupada_Envolvente_Huecos)
 
 # Ejecutar la consulta
@@ -1028,6 +1044,24 @@ resultados_CEE_Agrupada_Envolvente_Huecos = cur.fetchall()
 print("Resultados_CEE_Agrupada_Envolvente Huecos:",
       resultados_CEE_Agrupada_Envolvente_Huecos)
 
+huecosO = {}
+supTotalHueco = 0
+for hueco in resultados_CEE_Agrupada_Envolvente_Huecos:
+    huecosO[hueco[1]] = float(hueco[2])
+    supTotalHueco += float(hueco[2])
+huecosO["Total"] = float(supTotalHueco)
+
+print("Huecos:", huecosO)
+
+# Ahora Toca Calcular el % de Superficie Acristalada por Orientación
+
+porcentHuecosO = {}
+for orientacion, superf in huecosO.items():
+    porcentHuecosO[orientacion] = round(float(
+        superf/fachadasO[orientacion]*100), 2)
+porcentHuecosO["Total"] = round(float(supTotalHueco/supTotalFachada*100), 2)
+
+print("Porecentaje de Huecos por Orientación:", porcentHuecosO)
 
 # Obtener Datos Agregados de tabla Iluminación de un CEE
 
@@ -1056,6 +1090,13 @@ cur.execute(consulta_CEE_Agrupada_Iluminacion)
 resultados_CEE_Agrupada_Iluminacion = cur.fetchall()
 print("Resultados_CEE_Agrupada_Iluminacion:",
       resultados_CEE_Agrupada_Iluminacion)
+
+
+potTotalIlum = 0
+for ilum in resultados_CEE_Agrupada_Iluminacion:
+    potTotalIlum += float(ilum[2])
+
+print("PotenciaTotalIlum:", round(potTotalIlum/1000, 2), " kW")
 
 
 # Cierra la conexión
