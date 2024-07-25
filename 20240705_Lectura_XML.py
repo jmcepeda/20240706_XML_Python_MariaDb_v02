@@ -17,9 +17,9 @@ try:
         user="jmcepeda",
         password="cintiatyron2015",
         # Para mac
-        # host="192.168.50.143",
+        host="192.168.50.143",
         # Para Windows/remote
-        host="www.multiplicarsantiponce.duckdns.org",
+        # host="www.multiplicarsantiponce.duckdns.org",
         port=38969,
         database="pruebaxml",
         collation="utf8mb4_unicode_ci"
@@ -190,9 +190,9 @@ conn.commit()
 # Carga y parsea el archivo XML
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
-RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
-RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
-RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
+# RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
+# RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
+# RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
 
 
 tree = ET.parse(RUTARCHIVO)
@@ -340,6 +340,7 @@ print("Imprimiendo Valores de los campos Tras Añadir Fecha de Registro")
 
 # Inserta los datos en la base de datos
 cur.execute(query, tuple(values))
+conn.commit()
 
 # cur.execute(SENTENCIASQL)
 
@@ -347,7 +348,6 @@ cur.execute(query, tuple(values))
 
 
 # Confirma los cambios
-conn.commit()
 
 
 idCEE = cur.lastrowid
@@ -716,7 +716,7 @@ def mount_field_map_iluminacion_all(element, idCEE_a, current_path=""):
             values_list.insert(0, idCEE_a)
             # values_list.insert(0, clase_iluminacion_b[idclase])
 
-            query_iluminacion = f"INSERT INTO ILUMINACIONCEE ({strcampos}) VALUES({
+            query_iluminacion = f"INSERT INTO ILUMINACIONCEE({strcampos}) VALUES({
                 ', '.join(['%s'] * (num_campos_iluminacion+2))})"
 
             print("query_iluminacion: ", query_iluminacion)
@@ -800,7 +800,7 @@ def mount_field_map_zona_all(element, idCEE_a, current_path=""):
             values_list.insert(0, idCEE_a)
             # values_list.insert(0, clase_iluminacion_b[idclase])
 
-            query_zona = f"INSERT INTO ZONASCEE ({strcampos}) VALUES({
+            query_zona = f"INSERT INTO ZONASCEE({strcampos}) VALUES({
                 ', '.join(['%s'] * (num_campos_zona+2))})"
 
             print("query_iluminacion: ", query_zona)
@@ -919,6 +919,94 @@ print(f"SuperficieHabitable Total: {Suma_SuperficieHabitable} m2")
 print(
     f"Tres Veces la Suma de la SuperficieHabitable Total: {float(Suma_SuperficieHabitable)*3} m2")
 
+
+print("Este es el Id delÚltimo CEE Registrado en la Base de Datos: ", idCEE)
+
+# Obtener Datos Agregados de tabla Cerramientos-Fachada de un CEE
+
+# consulta_CEE_Agrupada_Envolvente = f"""
+# SELECT
+#     COUNT(*) AS Numero_Elementos,
+#     envolventeTermicaClase,
+#     envolventeTermicaTipo,
+#     envolventeTermicaOrientacion,
+#     SUM(envolventeTermicaSuperficie) AS Superficie
+# FROM
+#     ENVOLVENTETERMICACEE
+# WHERE
+#     idCee= {idCEE} AND AND envolventeTermicaClase='CerramientosOpacos'
+# GROUP BY
+#     envolventeTermicaClase,
+#     envolventeTermicaTipo,
+#     envolventeTermicaOrientacion;
+# """
+
+# consulta_CEE_Agrupada_Envolvente = f"""
+# SELECT
+#     COUNT(*) AS Numero_Elementos,
+#     envolventeTermicaTipo,
+#     envolventeTermicaOrientacion,
+#     SUM(envolventeTermicaSuperficie) AS Superficie
+# FROM
+#     ENVOLVENTETERMICACEE
+# WHERE
+#     idCee= {idCEE} AND envolventeTermicaClase='CerramientosOpacos'
+# GROUP BY
+#     envolventeTermicaTipo,
+#     envolventeTermicaOrientacion;
+# """
+
+
+consulta_CEE_Agrupada_Envolvente_Fachada = f"""
+SELECT
+    COUNT(*) AS Numero_Elementos,
+    envolventeTermicaOrientacion,
+    SUM(envolventeTermicaSuperficie) AS Superficie
+FROM
+    ENVOLVENTETERMICACEE
+WHERE
+    idCee= {idCEE} AND envolventeTermicaClase='CerramientosOpacos' AND envolventeTermicaTipo='Fachada'
+GROUP BY
+    envolventeTermicaOrientacion;
+"""
+
+print("consulta_CEE_Agrupada_Envolvente: ",
+      consulta_CEE_Agrupada_Envolvente_Fachada)
+
+# Ejecutar la consulta
+cur.execute(consulta_CEE_Agrupada_Envolvente_Fachada)
+
+# Obtener todos los resultados y almacenarlos en una lista de diccionarios
+resultados_CEE_Agrupada_Envolvente_Fachada = cur.fetchall()
+print("Resultados_CEE_Agrupada_Envolvente:",
+      resultados_CEE_Agrupada_Envolvente_Fachada)
+
+
+# Obtener Datos Agregados de tabla Cerramientos-Huecos de un CEE
+
+consulta_CEE_Agrupada_Envolvente_Huecos = f"""
+SELECT
+    COUNT(*) AS Numero_Elementos,
+    envolventeTermicaOrientacion,
+    SUM(envolventeTermicaSuperficie) AS Superficie
+FROM
+    ENVOLVENTETERMICACEE
+WHERE
+    idCee= {idCEE} AND envolventeTermicaClase='HuecosyLucernarios' AND envolventeTermicaTipo='Huecos'
+GROUP BY
+    envolventeTermicaOrientacion;
+"""
+
+print("consulta_CEE_Agrupada_Envolvente: ",
+      consulta_CEE_Agrupada_Envolvente_Huecos)
+
+# Ejecutar la consulta
+cur.execute(consulta_CEE_Agrupada_Envolvente_Huecos)
+
+# Obtener todos los resultados y almacenarlos en una lista de diccionarios
+resultados_CEE_Agrupada_Envolvente_Huecos = cur.fetchall()
+print("Resultados_CEE_Agrupada_Envolvente:",
+      resultados_CEE_Agrupada_Envolvente_Huecos)
 
 # Cierra la conexión
 cur.close()
