@@ -4,10 +4,12 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+import locale
 
 import pandas as pd
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from decimal import Decimal
 import mysql.connector
 from src.variables_v02 import field_map, field_list_equipo
 # from pymongo import MongoClient
@@ -197,7 +199,7 @@ conn.commit()
 # Carga y parsea el archivo XML
 
 RUTARCHIVO = "./01_XML_CEE/00_CE3X_GT/20210513_Gran_Terciario_Ejemplo_Sevilla.xml"
-# RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
+RUTARCHIVO = "./01_XML_CEE/00_CE3X_PYMT/3_Pequeno_terciario.xml"
 # RUTARCHIVO = "./01_XML_CEE/02_HULC/ejemplogt-Certificado-V21.xml"
 # RUTARCHIVO = "./01_XML_CEE/01_CYPETHERM/2126PT_Certificacionenergetica_v0_210901_JAGG.xml"
 
@@ -265,14 +267,16 @@ def convert_type(value):
     print('value: ', value)
     try:
         if value.isdigit():
-            return int(value)
+            # float_con_dos_decimales = float(f"{entero:.2f}")
+            # return int(value)
+            return float(f"{int(value):.2f}")
     except ValueError:
         pass
 
     # Detectar y convertir flotantes
     try:
         float_value = float(value)
-        return float_value
+        return round(float_value, 2)
     except ValueError:
         pass
 
@@ -984,11 +988,34 @@ resultados_CEE_Agrupada_Envolvente_Fachada = cur.fetchall()
 print("Resultados_CEE_Agrupada_Envolvente Fachada:",
       resultados_CEE_Agrupada_Envolvente_Fachada)
 
+
+Orientaciones = {
+    'E': 'Este',
+    'O': 'Oeste',
+    'N': 'Norte',
+    'S': 'Sur',
+    'E ': 'Este',
+    'O ': 'Oeste',
+    'N ': 'Norte',
+    'S ': 'Sur',
+    ' E': 'Este',
+    ' O': 'Oeste',
+    ' N': 'Norte',
+    ' S': 'Sur',
+    ' E ': 'Este',
+    ' O ': 'Oeste',
+    ' N ': 'Norte',
+    ' S ': 'Sur',
+}
 fachadasO = {}
 supTotalFachada = 0
 for fachada in resultados_CEE_Agrupada_Envolvente_Fachada:
-    fachadasO[fachada[1]] = float(fachada[2])
+    if (fachada[1] == 'N') or (fachada[1] == 'S') or (fachada[1] == 'E') or (fachada[1] == 'O') or (fachada[1] == 'N ') or (fachada[1] == 'S ') or (fachada[1] == 'E ') or (fachada[1] == 'O ') or (fachada[1] == ' N') or (fachada[1] == ' S') or (fachada[1] == ' E') or (fachada[1] == ' O' or (fachada[1] == ' N ') or (fachada[1] == ' S ') or (fachada[1] == ' E ') or (fachada[1] == ' O ')):
+        fachadasO[Orientaciones[fachada[1]]] = float(fachada[2])
+    else:
+        fachadasO[fachada[1]] = float(fachada[2])
     supTotalFachada += float(fachada[2])
+
 fachadasO["Total"] = float(supTotalFachada)
 
 print("Fachadas:", fachadasO)
@@ -1053,10 +1080,15 @@ resultados_CEE_Agrupada_Envolvente_Huecos = cur.fetchall()
 print("Resultados_CEE_Agrupada_Envolvente Huecos:",
       resultados_CEE_Agrupada_Envolvente_Huecos)
 
+
 huecosO = {}
 supTotalHueco = 0
 for hueco in resultados_CEE_Agrupada_Envolvente_Huecos:
-    huecosO[hueco[1]] = float(hueco[2])
+    if (hueco[1] == 'N') or (hueco[1] == 'S') or (hueco[1] == 'E') or (hueco[1] == 'O'):
+        huecosO[Orientaciones[hueco[1]]] = float(hueco[2])
+    else:
+        huecosO[hueco[1]] = float(hueco[2])
+    # huecosO[hueco[1]] = float(hueco[2])
     supTotalHueco += float(hueco[2])
 huecosO["Total"] = float(supTotalHueco)
 
@@ -1083,7 +1115,7 @@ SELECT
 FROM
     ILUMINACIONCEE
 WHERE
-    idCee= {idCEE} 
+    idCee= {idCEE}
 GROUP BY
     iluminacionVEEI,
     iluminacionIluminanciaMedia;
@@ -1175,10 +1207,37 @@ lista_clave_CEE = ['NombreDelEdificio',
                    'CalificacionEnergiaPrimariaNoRenovableGlobal']
 
 lista_valor_CEE = resultados_CEE[0]
+lista_valor_CEE_form = []
+# for elemento in lista_valor_CEE:
+
+
+def formatear_decimal(valor):
+    print(f"valor: {valor}")
+    print(
+        f"Resultado de comprobación de si es o no numero isintance(): {isinstance(valor, float)}")
+
+    if isinstance(valor, Decimal):
+        valor_redondeado = round(float(valor.quantize(Decimal('0.01'))), 2)
+        return valor_redondeado
+        # return f"{valor:.2f}".replace('.', ',')
+    return valor
+
+
+for i in range(len(lista_valor_CEE)):
+    lista_valor_CEE_form.append(formatear_decimal(lista_valor_CEE[i]))
+
 print('lista_valor_CEE: ', lista_valor_CEE)
 
+print('lista_valor_CEE_form: ', lista_valor_CEE_form)
+
 # Crear el diccionario utilizando zip a partir de dos tuplas
-informacion_CEE = dict(zip(lista_clave_CEE, lista_valor_CEE))
+# informacion_CEE = dict(zip(lista_clave_CEE, lista_valor_CEE))
+informacion_CEE = dict(zip(lista_clave_CEE, lista_valor_CEE_form))
+
+
+# Ajustar al locale adecuado, 'es_ES.UTF-8' para español
+locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
+
 
 print('informacion_CEE: ', informacion_CEE)
 print("resultados_CEE: ", resultados_CEE)
@@ -1197,13 +1256,42 @@ pdfmetrics.registerFont(TTFont('Arial-Bold', arial_bold_path))
 # Convertir los datos a un DataFrame para generar el Excel
 df = pd.DataFrame([informacion_CEE])
 
+# df_formateado = df.applymap(lambda x: locale.format_string(
+#     '%.2f', x) if isinstance(x, (int, float)) else x)
+
 # Crear el archivo PDF
 # print(resultados_CEE[0])
 nombreEdificioCEE = resultados_CEE[0][0]
-namefile = str(fecha_actual) + '_' + str(idCEE) + '_' + nombreEdificioCEE
+
+if fecha_actual.month < 10:
+    mes = '0' + str(fecha_actual.month)
+else:
+    mes = str(fecha_actual.month)
+
+if fecha_actual.day < 10:
+    dia = '0' + str(fecha_actual.day)
+else:
+    dia = str(fecha_actual.day)
+
+if fecha_actual.hour < 10:
+    hora = '0' + str(fecha_actual.hour)
+else:
+    hora = str(fecha_actual.hour)
+
+if fecha_actual.minute < 10:
+    minuto = '0' + str(fecha_actual.minute)
+else:
+    minuto = str(fecha_actual.minute)
+
+fechastr = str(fecha_actual.year) + mes + \
+    dia + "_" + \
+    hora + minuto
+
+namefile = fechastr + '_' + str(idCEE) + '_' + nombreEdificioCEE
 
 # Guardar el DataFrame como un archivo Excel
-df.to_excel(f"./01_Salida/xlsx/{namefile}_Resumen_CEE.xlsx", index=False)
+df.to_excel(
+    f"./01_Salida/xlsx/{namefile}_Resumen_CEE.xlsx", index=False, engine='openpyxl')
 
 pdf_path = f"./01_Salida/pdf/{namefile}_Resumen_CEE.pdf"
 pdf = canvas.Canvas(pdf_path, pagesize=letter)
@@ -1211,12 +1299,16 @@ width, height = letter
 
 # Añadir título al PDF
 pdf.setFont("Arial-Bold", 20)
-pdf.drawCentredString(width / 2, height - 40, "Información del CEE")
+pdf.drawCentredString(width / 2, height - 30, "Información del CEE")
 
 # Añadir imagen
 # Reemplaza esto con la ruta a tu imagen
 image_path = "./src/img/Etiqueta_ejemplo-768x990.jpg"
-pdf.drawImage(image_path, 50, height - 300, width=200, height=200)
+# pdf.drawImage(image_path, 50, height - 300, width=200, height=200)
+
+# pdf.drawImage(image_path, 50, height - 100, width=200, height=200)
+
+pdf.drawImage(image_path, width/3.5, height - 230, width=200, height=200)
 
 # Añadir tabla con información de la casa
 data = list(informacion_CEE.items())
@@ -1225,17 +1317,17 @@ table.setStyle(TableStyle([
     ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ('FONTNAME', (0, 0), (-1, 0), 'Arial-Bold'),
     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
     ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
     ('GRID', (0, 0), (-1, -1), 1, colors.black),
 ]))
 
 table.wrapOn(pdf, width, height)
-table.drawOn(pdf, 50, height - 350)
+table.drawOn(pdf, 100, 50)
 
 # Guardar y cerrar el PDF
 pdf.save()
 
 print(f"PDF generado: {pdf_path}")
-print("Archivo Excel generado: informacion_casa.xlsx")
+print(f"Archivo Excel generado: {namefile}_Resumen_CEE.xlsx")
