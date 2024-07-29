@@ -9,98 +9,164 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import sys
 
-# Datos de conexión
-try:
-    conn = mysql.connector.connect(
-        user="jmcepeda",
-        password="cintiatyron2015",
-        # Para mac
-        host="192.168.50.143",
-        # Para Windows/remote
-        # host="www.multiplicarsantiponce.duckdns.org",
-        port=38969,
-        database="prueba_webscraplng",
-        collation="utf8mb4_unicode_ci"
-    )
-except mysql.connector.Error as e:
-    print(f"Error conectando a la base de datos: {e}")
-    sys.exit(1)
+# """ # Datos de conexión
+# try:
+#     conn = mysql.connector.connect(
+#         user="jmcepeda",
+#         password="cintiatyron2015",
+#         # Para mac
+#         host="192.168.50.143",
+#         # Para Windows/remote
+#         # host="www.multiplicarsantiponce.duckdns.org",
+#         port=38969,
+#         database="prueba_webscraplng",
+#         collation="utf8mb4_unicode_ci"
+#     )
+# except mysql.connector.Error as e:
+#     print(f"Error conectando a la base de datos: {e}")
+#     sys.exit(1)
 
 
-cur = conn.cursor()
+# cur = conn.cursor()
 
 
-SENTENCIASQL = """CREATE TABLE IF NOT EXISTS ESTADO_TARIFA (
-    id INT UNSIGNED PRIMARY KEY NOT NULL,
-    descripcion VARCHAR(20) NOT NULL
-);
-"""
-cur.execute(SENTENCIASQL)
-conn.commit()
+# SENTENCIASQL = """CREATE TABLE IF NOT EXISTS ESTADO_TARIFA (
+#     id INT UNSIGNED PRIMARY KEY NOT NULL,
+#     descripcion VARCHAR(20) NOT NULL
+# );
+# """
+# cur.execute(SENTENCIASQL)
+# conn.commit()
 
-estados_tarifas_Table = cur.execute(
-    ("""SELECT COUNT(*) FROM ESTADO_TARIFA"""))
-# Obtener el primer valor de la primera fila
-num_estado_tarifa = cur.fetchall()
+# estados_tarifas_Table = cur.execute(
+#     ("""SELECT COUNT(*) FROM ESTADO_TARIFA"""))
+# # Obtener el primer valor de la primera fila
+# num_estado_tarifa = cur.fetchall()
 
-if num_estado_tarifa is None:
-    SENTENCIASQL = """
-    INSERT INTO ESTADO_TARIFA(id, descripcion) VALUES
-    (1, 'Tarifa Actual'),
-    (2, 'Tarifa Anterior');
-    """
-    cur.execute(SENTENCIASQL)
-    conn.commit()
+# if num_estado_tarifa is None:
+#     SENTENCIASQL = """
+#     INSERT INTO ESTADO_TARIFA(id, descripcion) VALUES
+#     (1, 'Tarifa Actual'),
+#     (2, 'Tarifa Anterior');
+#     """
+#     cur.execute(SENTENCIASQL)
+#     conn.commit()
 
-SENTENCIASQL = """CREATE TABLE IF NOT EXISTS TIPO_TARIFA(
-    id INT UNSIGNED PRIMARY KEY NOT NULL,
-    descripcion VARCHAR(60) NOT NULL);
-"""
-cur.execute(SENTENCIASQL)
-conn.commit()
+# SENTENCIASQL = """CREATE TABLE IF NOT EXISTS TIPO_TARIFA(
+#     id INT UNSIGNED PRIMARY KEY NOT NULL,
+#     descripcion VARCHAR(60) NOT NULL);
+# """
+# cur.execute(SENTENCIASQL)
+# conn.commit()
 
 
-tipos_tarifas_Table = cur.execute(("""SELECT COUNT(*) FROM TIPO_TARIFA"""))
-# Obtener el primer valor de la primera fila
-num_tipo_tarifa = cur.fetchall()
+# tipos_tarifas_Table = cur.execute(("""SELECT COUNT(*) FROM TIPO_TARIFA"""))
+# # Obtener el primer valor de la primera fila
+# num_tipo_tarifa = cur.fetchall()
 
-if num_tipo_tarifa is None:
-    SENTENCIASQL = """
-    INSERT INTO TIPO_TARIFA(id, descripcion) VALUES
-    (1, 'Sin Discrimacion Horaria'),
-    (2, 'Con Discriminación Horaria Tipo 1'),
-    (3, 'Con Discriminación Horaria Tipo 2'),
-    (4, 'Indexada PVPC');
-    """
-    cur.execute(SENTENCIASQL)
-    conn.commit()
+# if num_tipo_tarifa is None:
+#     SENTENCIASQL = """
+#     INSERT INTO TIPO_TARIFA(id, descripcion) VALUES
+#     (1, 'Sin Discrimacion Horaria'),
+#     (2, 'Con Discriminación Horaria Tipo 1'),
+#     (3, 'Con Discriminación Horaria Tipo 2'),
+#     (4, 'Indexada PVPC');
+#     """
+#     cur.execute(SENTENCIASQL)
+#     conn.commit()
 
-SENTENCIASQL = """CREATE TABLE IF NOT EXISTS TARIFAS(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    comercializadora VARCHAR(80) NOT NULL,
-    tarifa VARCHAR(50) NOT NULL,
-    ESTADO_ID INT UNSIGNED NOT NULL,
-    TIPO_TARIFA_ID INT UNSIGNED NOT NULL,
-    precio_potencia_P1 DECIMAL(10, 2) NOT NULL,
-    precio_potencia_P2 DECIMAL(10, 2) NOT NULL,
-    precio_energia_P1 DECIMAL(10, 2) NOT NULL,
-    precio_energia_P2 DECIMAL(10, 2),
-    precio_energia_P3 DECIMAL(10, 2),
-    FOREIGN KEY(ESTADO_ID) REFERENCES ESTADO_TARIFA(id),
-    FOREIGN KEY(TIPO_TARIFA_ID) REFERENCES TIPO_TARIFA(id)
-);
-"""
-cur.execute(SENTENCIASQL)
+# SENTENCIASQL = """CREATE TABLE IF NOT EXISTS TARIFAS(
+#     id INT AUTO_INCREMENT PRIMARY KEY,
+#     comercializadora VARCHAR(80) NOT NULL,
+#     tarifa VARCHAR(50) NOT NULL,
+#     ESTADO_ID INT UNSIGNED NOT NULL,
+#     TIPO_TARIFA_ID INT UNSIGNED NOT NULL,
+#     precio_potencia_P1 DECIMAL(10, 2) NOT NULL,
+#     precio_potencia_P2 DECIMAL(10, 2) NOT NULL,
+#     precio_energia_P1 DECIMAL(10, 2) NOT NULL,
+#     precio_energia_P2 DECIMAL(10, 2),
+#     precio_energia_P3 DECIMAL(10, 2),
+#     FOREIGN KEY(ESTADO_ID) REFERENCES ESTADO_TARIFA(id),
+#     FOREIGN KEY(TIPO_TARIFA_ID) REFERENCES TIPO_TARIFA(id)
+# );
+# """
+# cur.execute(SENTENCIASQL)
 
-conn.commit()
+# conn.commit()
 
-cur.close()
-conn.close()
+# cur.close()
+# conn.close() """
 
 
 # Definir la URL de la comercializadora
 # Reemplazar con la URL real
 url = 'https://www.naturgy.es/hogar/luz/tarifa_por_uso_luz'
+
+
+def obtener_precio():
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Navegar por los divs anidados
+    contenedor = soup.find('div', class_='container')
+    if contenedor:
+        print("Localizó Contenedor: ")
+        row = soup.find('div', class_='row')
+        if row:
+            print("Localizó row: ")
+            faqssection = soup.find('div', class_='faqs-section')
+            if faqssection:
+                print("Localizó faqssection: ")
+                faqscontainer = soup.find('div', class_='faqs-container')
+                if faqscontainer:
+                    print("Localizó faqscontainer: ")
+                    moreinfo = soup.find(
+                        'div', class_='moreInfoDetail1-1615661069440')
+                    if moreinfo:
+                        print("Localizó moreinfo: ")
+                        colfaqs = soup.find('div', class_='col-faqs')
+                        if colfaqs:
+                            print("Localizó colfaqs: ")
+                            tabla1id = soup.find('div', id='Tabla1')
+                            if tabla1id:
+                                print("Localizado tabla1Id: ")
+                                containertabla1 = soup.find(
+                                    'div', class_='container-tabla-1 tabla1')
+                                if containertabla1:
+                                    print("Localizó container-tabla-1 tabla1: ")
+                                    tabla_potencia = soup.find(
+                                        'div', class_='tablaEnergia')
+                                    if tabla_potencia:
+                                        print("Localizó ctablaEnergia: ")
+                                        div_precios = tabla_potencia.find(
+                                            'div', class_='divPrecios')
+                                        if div_precios:
+                                            print("Localizaod divPrecios: ")
+                                            textH = div_precios.find(
+                                                'div', class_='textH')
+                                            if textH:
+                                                print("Localizado textH: ")
+                                                precio = textH.find(
+                                                    'div', class_='precio').text
+                                                return precio
+    return None
+
+
+precio = obtener_precio()
+precio = precio.replace(',', '.')
+preciodef = float(precio[:8])
+
+if precio:
+    print(f'El precio de la tarifa es: {preciodef}')
+else:
+    print('No se encontró el precio de la tarifa.')
+
+# if __name__ == "__main__":
+#     precio = obtener_precio()
+#     if precio:
+#         print(f'El precio de la tarifa es: {precio}')
+#     else:
+#         print('No se encontró el precio de la tarifa.')
 
 
 # <div class="tablaPotencia" data-table="p1" data-algo="0" data-typevalor="NO IVA" data-potencia="Potencia ≤10kW" data-assetid="1615692614551"><div class="titulo">Término de potencia</div><div class="container-div-horarios-precios"><div class="divHorarios" >
